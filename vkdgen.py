@@ -307,6 +307,10 @@ version(NAMEPREFIXLoadFromDerelict) {
 					maxName = fieldName
 					maxValue = numval
 		
+		if name == "VkColorSpaceKHR":
+			print("\tVK_COLORSPACE_SRGB_NONLINEAR_KHR = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,", file=self.typesFile)
+			self.enumConstants.add((name, "VK_COLORSPACE_SRGB_NONLINEAR_KHR"))
+		
 		if expand:
 			prefix = groupinfo.elem.attrib["expand"]
 			print("\t%s_BEGIN_RANGE = %s," % (prefix, minName), file=self.typesFile)
@@ -325,7 +329,7 @@ version(NAMEPREFIXLoadFromDerelict) {
 		if strVal == "VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT":
 			strVal = "VkStructureType."+strVal
 		elif strVal == "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR":
-			strVal = "VkColorSpaceKHR."+strVal
+			return
 		strVal = re.sub(re_long_int, "\g<1>UL", strVal)
 		print("enum %s = %s;" % (name, strVal), file=self.typesFile)
 		
