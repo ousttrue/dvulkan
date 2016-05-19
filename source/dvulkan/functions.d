@@ -1,7 +1,9 @@
 
 module dvulkan.functions;
 
-public import dvulkan.types;
+import dvulkan.types;
+import std.typetuple;
+import std.traits : Parameters;
 
 extern(System) @nogc nothrow {
 
@@ -335,6 +337,174 @@ __gshared {
 	PFN_vkWaitForFences vkWaitForFences;
 }
 
+alias AllVulkanFunctions = TypeTuple!(
+
+	vkAcquireNextImageKHR,
+	vkAllocateCommandBuffers,
+	vkAllocateDescriptorSets,
+	vkAllocateMemory,
+	vkBeginCommandBuffer,
+	vkBindBufferMemory,
+	vkBindImageMemory,
+	vkCmdBeginQuery,
+	vkCmdBeginRenderPass,
+	vkCmdBindDescriptorSets,
+	vkCmdBindIndexBuffer,
+	vkCmdBindPipeline,
+	vkCmdBindVertexBuffers,
+	vkCmdBlitImage,
+	vkCmdClearAttachments,
+	vkCmdClearColorImage,
+	vkCmdClearDepthStencilImage,
+	vkCmdCopyBuffer,
+	vkCmdCopyBufferToImage,
+	vkCmdCopyImage,
+	vkCmdCopyImageToBuffer,
+	vkCmdCopyQueryPoolResults,
+	vkCmdDebugMarkerBeginEXT,
+	vkCmdDebugMarkerEndEXT,
+	vkCmdDebugMarkerInsertEXT,
+	vkCmdDispatch,
+	vkCmdDispatchIndirect,
+	vkCmdDraw,
+	vkCmdDrawIndexed,
+	vkCmdDrawIndexedIndirect,
+	vkCmdDrawIndirect,
+	vkCmdEndQuery,
+	vkCmdEndRenderPass,
+	vkCmdExecuteCommands,
+	vkCmdFillBuffer,
+	vkCmdNextSubpass,
+	vkCmdPipelineBarrier,
+	vkCmdPushConstants,
+	vkCmdResetEvent,
+	vkCmdResetQueryPool,
+	vkCmdResolveImage,
+	vkCmdSetBlendConstants,
+	vkCmdSetDepthBias,
+	vkCmdSetDepthBounds,
+	vkCmdSetEvent,
+	vkCmdSetLineWidth,
+	vkCmdSetScissor,
+	vkCmdSetStencilCompareMask,
+	vkCmdSetStencilReference,
+	vkCmdSetStencilWriteMask,
+	vkCmdSetViewport,
+	vkCmdUpdateBuffer,
+	vkCmdWaitEvents,
+	vkCmdWriteTimestamp,
+	vkCreateBuffer,
+	vkCreateBufferView,
+	vkCreateCommandPool,
+	vkCreateComputePipelines,
+	vkCreateDebugReportCallbackEXT,
+	vkCreateDescriptorPool,
+	vkCreateDescriptorSetLayout,
+	vkCreateDevice,
+	vkCreateDisplayModeKHR,
+	vkCreateDisplayPlaneSurfaceKHR,
+	vkCreateEvent,
+	vkCreateFence,
+	vkCreateFramebuffer,
+	vkCreateGraphicsPipelines,
+	vkCreateImage,
+	vkCreateImageView,
+	vkCreateInstance,
+	vkCreatePipelineCache,
+	vkCreatePipelineLayout,
+	vkCreateQueryPool,
+	vkCreateRenderPass,
+	vkCreateSampler,
+	vkCreateSemaphore,
+	vkCreateShaderModule,
+	vkCreateSharedSwapchainsKHR,
+	vkCreateSwapchainKHR,
+	vkDebugMarkerSetObjectNameEXT,
+	vkDebugMarkerSetObjectTagEXT,
+	vkDebugReportMessageEXT,
+	vkDestroyBuffer,
+	vkDestroyBufferView,
+	vkDestroyCommandPool,
+	vkDestroyDebugReportCallbackEXT,
+	vkDestroyDescriptorPool,
+	vkDestroyDescriptorSetLayout,
+	vkDestroyDevice,
+	vkDestroyEvent,
+	vkDestroyFence,
+	vkDestroyFramebuffer,
+	vkDestroyImage,
+	vkDestroyImageView,
+	vkDestroyInstance,
+	vkDestroyPipeline,
+	vkDestroyPipelineCache,
+	vkDestroyPipelineLayout,
+	vkDestroyQueryPool,
+	vkDestroyRenderPass,
+	vkDestroySampler,
+	vkDestroySemaphore,
+	vkDestroyShaderModule,
+	vkDestroySurfaceKHR,
+	vkDestroySwapchainKHR,
+	vkDeviceWaitIdle,
+	vkEndCommandBuffer,
+	vkEnumerateDeviceExtensionProperties,
+	vkEnumerateDeviceLayerProperties,
+	vkEnumerateInstanceExtensionProperties,
+	vkEnumerateInstanceLayerProperties,
+	vkEnumeratePhysicalDevices,
+	vkFlushMappedMemoryRanges,
+	vkFreeCommandBuffers,
+	vkFreeDescriptorSets,
+	vkFreeMemory,
+	vkGetBufferMemoryRequirements,
+	vkGetDeviceMemoryCommitment,
+	vkGetDeviceProcAddr,
+	vkGetDeviceQueue,
+	vkGetDisplayModePropertiesKHR,
+	vkGetDisplayPlaneCapabilitiesKHR,
+	vkGetDisplayPlaneSupportedDisplaysKHR,
+	vkGetEventStatus,
+	vkGetFenceStatus,
+	vkGetImageMemoryRequirements,
+	vkGetImageSparseMemoryRequirements,
+	vkGetImageSubresourceLayout,
+	vkGetInstanceProcAddr,
+	vkGetPhysicalDeviceDisplayPlanePropertiesKHR,
+	vkGetPhysicalDeviceDisplayPropertiesKHR,
+	vkGetPhysicalDeviceFeatures,
+	vkGetPhysicalDeviceFormatProperties,
+	vkGetPhysicalDeviceImageFormatProperties,
+	vkGetPhysicalDeviceMemoryProperties,
+	vkGetPhysicalDeviceProperties,
+	vkGetPhysicalDeviceQueueFamilyProperties,
+	vkGetPhysicalDeviceSparseImageFormatProperties,
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR,
+	vkGetPhysicalDeviceSurfaceFormatsKHR,
+	vkGetPhysicalDeviceSurfacePresentModesKHR,
+	vkGetPhysicalDeviceSurfaceSupportKHR,
+	vkGetPipelineCacheData,
+	vkGetQueryPoolResults,
+	vkGetRenderAreaGranularity,
+	vkGetSwapchainImagesKHR,
+	vkInvalidateMappedMemoryRanges,
+	vkMapMemory,
+	vkMergePipelineCaches,
+	vkQueueBindSparse,
+	vkQueuePresentKHR,
+	vkQueueSubmit,
+	vkQueueWaitIdle,
+	vkResetCommandBuffer,
+	vkResetCommandPool,
+	vkResetDescriptorPool,
+	vkResetEvent,
+	vkResetFences,
+	vkSetEvent,
+	vkUnmapMemory,
+	vkUpdateDescriptorSets,
+	vkWaitForFences,
+
+);
+
 struct DVulkanLoader {
 	@disable this();
 	@disable this(this);
@@ -347,331 +517,29 @@ struct DVulkanLoader {
 	}
 	
 	static void loadAllFunctions(VkInstance instance) {
-		assert(vkGetInstanceProcAddr !is null, "Must call DVulkanLoader.loadInstanceFunctions before DVulkanLOADER.loadAllFunctions");
-
-		vkAcquireNextImageKHR = cast(typeof(vkAcquireNextImageKHR)) vkGetInstanceProcAddr(instance, "vkAcquireNextImageKHR");
-		vkAllocateCommandBuffers = cast(typeof(vkAllocateCommandBuffers)) vkGetInstanceProcAddr(instance, "vkAllocateCommandBuffers");
-		vkAllocateDescriptorSets = cast(typeof(vkAllocateDescriptorSets)) vkGetInstanceProcAddr(instance, "vkAllocateDescriptorSets");
-		vkAllocateMemory = cast(typeof(vkAllocateMemory)) vkGetInstanceProcAddr(instance, "vkAllocateMemory");
-		vkBeginCommandBuffer = cast(typeof(vkBeginCommandBuffer)) vkGetInstanceProcAddr(instance, "vkBeginCommandBuffer");
-		vkBindBufferMemory = cast(typeof(vkBindBufferMemory)) vkGetInstanceProcAddr(instance, "vkBindBufferMemory");
-		vkBindImageMemory = cast(typeof(vkBindImageMemory)) vkGetInstanceProcAddr(instance, "vkBindImageMemory");
-		vkCmdBeginQuery = cast(typeof(vkCmdBeginQuery)) vkGetInstanceProcAddr(instance, "vkCmdBeginQuery");
-		vkCmdBeginRenderPass = cast(typeof(vkCmdBeginRenderPass)) vkGetInstanceProcAddr(instance, "vkCmdBeginRenderPass");
-		vkCmdBindDescriptorSets = cast(typeof(vkCmdBindDescriptorSets)) vkGetInstanceProcAddr(instance, "vkCmdBindDescriptorSets");
-		vkCmdBindIndexBuffer = cast(typeof(vkCmdBindIndexBuffer)) vkGetInstanceProcAddr(instance, "vkCmdBindIndexBuffer");
-		vkCmdBindPipeline = cast(typeof(vkCmdBindPipeline)) vkGetInstanceProcAddr(instance, "vkCmdBindPipeline");
-		vkCmdBindVertexBuffers = cast(typeof(vkCmdBindVertexBuffers)) vkGetInstanceProcAddr(instance, "vkCmdBindVertexBuffers");
-		vkCmdBlitImage = cast(typeof(vkCmdBlitImage)) vkGetInstanceProcAddr(instance, "vkCmdBlitImage");
-		vkCmdClearAttachments = cast(typeof(vkCmdClearAttachments)) vkGetInstanceProcAddr(instance, "vkCmdClearAttachments");
-		vkCmdClearColorImage = cast(typeof(vkCmdClearColorImage)) vkGetInstanceProcAddr(instance, "vkCmdClearColorImage");
-		vkCmdClearDepthStencilImage = cast(typeof(vkCmdClearDepthStencilImage)) vkGetInstanceProcAddr(instance, "vkCmdClearDepthStencilImage");
-		vkCmdCopyBuffer = cast(typeof(vkCmdCopyBuffer)) vkGetInstanceProcAddr(instance, "vkCmdCopyBuffer");
-		vkCmdCopyBufferToImage = cast(typeof(vkCmdCopyBufferToImage)) vkGetInstanceProcAddr(instance, "vkCmdCopyBufferToImage");
-		vkCmdCopyImage = cast(typeof(vkCmdCopyImage)) vkGetInstanceProcAddr(instance, "vkCmdCopyImage");
-		vkCmdCopyImageToBuffer = cast(typeof(vkCmdCopyImageToBuffer)) vkGetInstanceProcAddr(instance, "vkCmdCopyImageToBuffer");
-		vkCmdCopyQueryPoolResults = cast(typeof(vkCmdCopyQueryPoolResults)) vkGetInstanceProcAddr(instance, "vkCmdCopyQueryPoolResults");
-		vkCmdDebugMarkerBeginEXT = cast(typeof(vkCmdDebugMarkerBeginEXT)) vkGetInstanceProcAddr(instance, "vkCmdDebugMarkerBeginEXT");
-		vkCmdDebugMarkerEndEXT = cast(typeof(vkCmdDebugMarkerEndEXT)) vkGetInstanceProcAddr(instance, "vkCmdDebugMarkerEndEXT");
-		vkCmdDebugMarkerInsertEXT = cast(typeof(vkCmdDebugMarkerInsertEXT)) vkGetInstanceProcAddr(instance, "vkCmdDebugMarkerInsertEXT");
-		vkCmdDispatch = cast(typeof(vkCmdDispatch)) vkGetInstanceProcAddr(instance, "vkCmdDispatch");
-		vkCmdDispatchIndirect = cast(typeof(vkCmdDispatchIndirect)) vkGetInstanceProcAddr(instance, "vkCmdDispatchIndirect");
-		vkCmdDraw = cast(typeof(vkCmdDraw)) vkGetInstanceProcAddr(instance, "vkCmdDraw");
-		vkCmdDrawIndexed = cast(typeof(vkCmdDrawIndexed)) vkGetInstanceProcAddr(instance, "vkCmdDrawIndexed");
-		vkCmdDrawIndexedIndirect = cast(typeof(vkCmdDrawIndexedIndirect)) vkGetInstanceProcAddr(instance, "vkCmdDrawIndexedIndirect");
-		vkCmdDrawIndirect = cast(typeof(vkCmdDrawIndirect)) vkGetInstanceProcAddr(instance, "vkCmdDrawIndirect");
-		vkCmdEndQuery = cast(typeof(vkCmdEndQuery)) vkGetInstanceProcAddr(instance, "vkCmdEndQuery");
-		vkCmdEndRenderPass = cast(typeof(vkCmdEndRenderPass)) vkGetInstanceProcAddr(instance, "vkCmdEndRenderPass");
-		vkCmdExecuteCommands = cast(typeof(vkCmdExecuteCommands)) vkGetInstanceProcAddr(instance, "vkCmdExecuteCommands");
-		vkCmdFillBuffer = cast(typeof(vkCmdFillBuffer)) vkGetInstanceProcAddr(instance, "vkCmdFillBuffer");
-		vkCmdNextSubpass = cast(typeof(vkCmdNextSubpass)) vkGetInstanceProcAddr(instance, "vkCmdNextSubpass");
-		vkCmdPipelineBarrier = cast(typeof(vkCmdPipelineBarrier)) vkGetInstanceProcAddr(instance, "vkCmdPipelineBarrier");
-		vkCmdPushConstants = cast(typeof(vkCmdPushConstants)) vkGetInstanceProcAddr(instance, "vkCmdPushConstants");
-		vkCmdResetEvent = cast(typeof(vkCmdResetEvent)) vkGetInstanceProcAddr(instance, "vkCmdResetEvent");
-		vkCmdResetQueryPool = cast(typeof(vkCmdResetQueryPool)) vkGetInstanceProcAddr(instance, "vkCmdResetQueryPool");
-		vkCmdResolveImage = cast(typeof(vkCmdResolveImage)) vkGetInstanceProcAddr(instance, "vkCmdResolveImage");
-		vkCmdSetBlendConstants = cast(typeof(vkCmdSetBlendConstants)) vkGetInstanceProcAddr(instance, "vkCmdSetBlendConstants");
-		vkCmdSetDepthBias = cast(typeof(vkCmdSetDepthBias)) vkGetInstanceProcAddr(instance, "vkCmdSetDepthBias");
-		vkCmdSetDepthBounds = cast(typeof(vkCmdSetDepthBounds)) vkGetInstanceProcAddr(instance, "vkCmdSetDepthBounds");
-		vkCmdSetEvent = cast(typeof(vkCmdSetEvent)) vkGetInstanceProcAddr(instance, "vkCmdSetEvent");
-		vkCmdSetLineWidth = cast(typeof(vkCmdSetLineWidth)) vkGetInstanceProcAddr(instance, "vkCmdSetLineWidth");
-		vkCmdSetScissor = cast(typeof(vkCmdSetScissor)) vkGetInstanceProcAddr(instance, "vkCmdSetScissor");
-		vkCmdSetStencilCompareMask = cast(typeof(vkCmdSetStencilCompareMask)) vkGetInstanceProcAddr(instance, "vkCmdSetStencilCompareMask");
-		vkCmdSetStencilReference = cast(typeof(vkCmdSetStencilReference)) vkGetInstanceProcAddr(instance, "vkCmdSetStencilReference");
-		vkCmdSetStencilWriteMask = cast(typeof(vkCmdSetStencilWriteMask)) vkGetInstanceProcAddr(instance, "vkCmdSetStencilWriteMask");
-		vkCmdSetViewport = cast(typeof(vkCmdSetViewport)) vkGetInstanceProcAddr(instance, "vkCmdSetViewport");
-		vkCmdUpdateBuffer = cast(typeof(vkCmdUpdateBuffer)) vkGetInstanceProcAddr(instance, "vkCmdUpdateBuffer");
-		vkCmdWaitEvents = cast(typeof(vkCmdWaitEvents)) vkGetInstanceProcAddr(instance, "vkCmdWaitEvents");
-		vkCmdWriteTimestamp = cast(typeof(vkCmdWriteTimestamp)) vkGetInstanceProcAddr(instance, "vkCmdWriteTimestamp");
-		vkCreateBuffer = cast(typeof(vkCreateBuffer)) vkGetInstanceProcAddr(instance, "vkCreateBuffer");
-		vkCreateBufferView = cast(typeof(vkCreateBufferView)) vkGetInstanceProcAddr(instance, "vkCreateBufferView");
-		vkCreateCommandPool = cast(typeof(vkCreateCommandPool)) vkGetInstanceProcAddr(instance, "vkCreateCommandPool");
-		vkCreateComputePipelines = cast(typeof(vkCreateComputePipelines)) vkGetInstanceProcAddr(instance, "vkCreateComputePipelines");
-		vkCreateDebugReportCallbackEXT = cast(typeof(vkCreateDebugReportCallbackEXT)) vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
-		vkCreateDescriptorPool = cast(typeof(vkCreateDescriptorPool)) vkGetInstanceProcAddr(instance, "vkCreateDescriptorPool");
-		vkCreateDescriptorSetLayout = cast(typeof(vkCreateDescriptorSetLayout)) vkGetInstanceProcAddr(instance, "vkCreateDescriptorSetLayout");
-		vkCreateDevice = cast(typeof(vkCreateDevice)) vkGetInstanceProcAddr(instance, "vkCreateDevice");
-		vkCreateDisplayModeKHR = cast(typeof(vkCreateDisplayModeKHR)) vkGetInstanceProcAddr(instance, "vkCreateDisplayModeKHR");
-		vkCreateDisplayPlaneSurfaceKHR = cast(typeof(vkCreateDisplayPlaneSurfaceKHR)) vkGetInstanceProcAddr(instance, "vkCreateDisplayPlaneSurfaceKHR");
-		vkCreateEvent = cast(typeof(vkCreateEvent)) vkGetInstanceProcAddr(instance, "vkCreateEvent");
-		vkCreateFence = cast(typeof(vkCreateFence)) vkGetInstanceProcAddr(instance, "vkCreateFence");
-		vkCreateFramebuffer = cast(typeof(vkCreateFramebuffer)) vkGetInstanceProcAddr(instance, "vkCreateFramebuffer");
-		vkCreateGraphicsPipelines = cast(typeof(vkCreateGraphicsPipelines)) vkGetInstanceProcAddr(instance, "vkCreateGraphicsPipelines");
-		vkCreateImage = cast(typeof(vkCreateImage)) vkGetInstanceProcAddr(instance, "vkCreateImage");
-		vkCreateImageView = cast(typeof(vkCreateImageView)) vkGetInstanceProcAddr(instance, "vkCreateImageView");
-		vkCreatePipelineCache = cast(typeof(vkCreatePipelineCache)) vkGetInstanceProcAddr(instance, "vkCreatePipelineCache");
-		vkCreatePipelineLayout = cast(typeof(vkCreatePipelineLayout)) vkGetInstanceProcAddr(instance, "vkCreatePipelineLayout");
-		vkCreateQueryPool = cast(typeof(vkCreateQueryPool)) vkGetInstanceProcAddr(instance, "vkCreateQueryPool");
-		vkCreateRenderPass = cast(typeof(vkCreateRenderPass)) vkGetInstanceProcAddr(instance, "vkCreateRenderPass");
-		vkCreateSampler = cast(typeof(vkCreateSampler)) vkGetInstanceProcAddr(instance, "vkCreateSampler");
-		vkCreateSemaphore = cast(typeof(vkCreateSemaphore)) vkGetInstanceProcAddr(instance, "vkCreateSemaphore");
-		vkCreateShaderModule = cast(typeof(vkCreateShaderModule)) vkGetInstanceProcAddr(instance, "vkCreateShaderModule");
-		vkCreateSharedSwapchainsKHR = cast(typeof(vkCreateSharedSwapchainsKHR)) vkGetInstanceProcAddr(instance, "vkCreateSharedSwapchainsKHR");
-		vkCreateSwapchainKHR = cast(typeof(vkCreateSwapchainKHR)) vkGetInstanceProcAddr(instance, "vkCreateSwapchainKHR");
-		vkDebugMarkerSetObjectNameEXT = cast(typeof(vkDebugMarkerSetObjectNameEXT)) vkGetInstanceProcAddr(instance, "vkDebugMarkerSetObjectNameEXT");
-		vkDebugMarkerSetObjectTagEXT = cast(typeof(vkDebugMarkerSetObjectTagEXT)) vkGetInstanceProcAddr(instance, "vkDebugMarkerSetObjectTagEXT");
-		vkDebugReportMessageEXT = cast(typeof(vkDebugReportMessageEXT)) vkGetInstanceProcAddr(instance, "vkDebugReportMessageEXT");
-		vkDestroyBuffer = cast(typeof(vkDestroyBuffer)) vkGetInstanceProcAddr(instance, "vkDestroyBuffer");
-		vkDestroyBufferView = cast(typeof(vkDestroyBufferView)) vkGetInstanceProcAddr(instance, "vkDestroyBufferView");
-		vkDestroyCommandPool = cast(typeof(vkDestroyCommandPool)) vkGetInstanceProcAddr(instance, "vkDestroyCommandPool");
-		vkDestroyDebugReportCallbackEXT = cast(typeof(vkDestroyDebugReportCallbackEXT)) vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
-		vkDestroyDescriptorPool = cast(typeof(vkDestroyDescriptorPool)) vkGetInstanceProcAddr(instance, "vkDestroyDescriptorPool");
-		vkDestroyDescriptorSetLayout = cast(typeof(vkDestroyDescriptorSetLayout)) vkGetInstanceProcAddr(instance, "vkDestroyDescriptorSetLayout");
-		vkDestroyDevice = cast(typeof(vkDestroyDevice)) vkGetInstanceProcAddr(instance, "vkDestroyDevice");
-		vkDestroyEvent = cast(typeof(vkDestroyEvent)) vkGetInstanceProcAddr(instance, "vkDestroyEvent");
-		vkDestroyFence = cast(typeof(vkDestroyFence)) vkGetInstanceProcAddr(instance, "vkDestroyFence");
-		vkDestroyFramebuffer = cast(typeof(vkDestroyFramebuffer)) vkGetInstanceProcAddr(instance, "vkDestroyFramebuffer");
-		vkDestroyImage = cast(typeof(vkDestroyImage)) vkGetInstanceProcAddr(instance, "vkDestroyImage");
-		vkDestroyImageView = cast(typeof(vkDestroyImageView)) vkGetInstanceProcAddr(instance, "vkDestroyImageView");
-		vkDestroyInstance = cast(typeof(vkDestroyInstance)) vkGetInstanceProcAddr(instance, "vkDestroyInstance");
-		vkDestroyPipeline = cast(typeof(vkDestroyPipeline)) vkGetInstanceProcAddr(instance, "vkDestroyPipeline");
-		vkDestroyPipelineCache = cast(typeof(vkDestroyPipelineCache)) vkGetInstanceProcAddr(instance, "vkDestroyPipelineCache");
-		vkDestroyPipelineLayout = cast(typeof(vkDestroyPipelineLayout)) vkGetInstanceProcAddr(instance, "vkDestroyPipelineLayout");
-		vkDestroyQueryPool = cast(typeof(vkDestroyQueryPool)) vkGetInstanceProcAddr(instance, "vkDestroyQueryPool");
-		vkDestroyRenderPass = cast(typeof(vkDestroyRenderPass)) vkGetInstanceProcAddr(instance, "vkDestroyRenderPass");
-		vkDestroySampler = cast(typeof(vkDestroySampler)) vkGetInstanceProcAddr(instance, "vkDestroySampler");
-		vkDestroySemaphore = cast(typeof(vkDestroySemaphore)) vkGetInstanceProcAddr(instance, "vkDestroySemaphore");
-		vkDestroyShaderModule = cast(typeof(vkDestroyShaderModule)) vkGetInstanceProcAddr(instance, "vkDestroyShaderModule");
-		vkDestroySurfaceKHR = cast(typeof(vkDestroySurfaceKHR)) vkGetInstanceProcAddr(instance, "vkDestroySurfaceKHR");
-		vkDestroySwapchainKHR = cast(typeof(vkDestroySwapchainKHR)) vkGetInstanceProcAddr(instance, "vkDestroySwapchainKHR");
-		vkDeviceWaitIdle = cast(typeof(vkDeviceWaitIdle)) vkGetInstanceProcAddr(instance, "vkDeviceWaitIdle");
-		vkEndCommandBuffer = cast(typeof(vkEndCommandBuffer)) vkGetInstanceProcAddr(instance, "vkEndCommandBuffer");
-		vkEnumerateDeviceExtensionProperties = cast(typeof(vkEnumerateDeviceExtensionProperties)) vkGetInstanceProcAddr(instance, "vkEnumerateDeviceExtensionProperties");
-		vkEnumerateDeviceLayerProperties = cast(typeof(vkEnumerateDeviceLayerProperties)) vkGetInstanceProcAddr(instance, "vkEnumerateDeviceLayerProperties");
-		vkEnumeratePhysicalDevices = cast(typeof(vkEnumeratePhysicalDevices)) vkGetInstanceProcAddr(instance, "vkEnumeratePhysicalDevices");
-		vkFlushMappedMemoryRanges = cast(typeof(vkFlushMappedMemoryRanges)) vkGetInstanceProcAddr(instance, "vkFlushMappedMemoryRanges");
-		vkFreeCommandBuffers = cast(typeof(vkFreeCommandBuffers)) vkGetInstanceProcAddr(instance, "vkFreeCommandBuffers");
-		vkFreeDescriptorSets = cast(typeof(vkFreeDescriptorSets)) vkGetInstanceProcAddr(instance, "vkFreeDescriptorSets");
-		vkFreeMemory = cast(typeof(vkFreeMemory)) vkGetInstanceProcAddr(instance, "vkFreeMemory");
-		vkGetBufferMemoryRequirements = cast(typeof(vkGetBufferMemoryRequirements)) vkGetInstanceProcAddr(instance, "vkGetBufferMemoryRequirements");
-		vkGetDeviceMemoryCommitment = cast(typeof(vkGetDeviceMemoryCommitment)) vkGetInstanceProcAddr(instance, "vkGetDeviceMemoryCommitment");
-		vkGetDeviceQueue = cast(typeof(vkGetDeviceQueue)) vkGetInstanceProcAddr(instance, "vkGetDeviceQueue");
-		vkGetDisplayModePropertiesKHR = cast(typeof(vkGetDisplayModePropertiesKHR)) vkGetInstanceProcAddr(instance, "vkGetDisplayModePropertiesKHR");
-		vkGetDisplayPlaneCapabilitiesKHR = cast(typeof(vkGetDisplayPlaneCapabilitiesKHR)) vkGetInstanceProcAddr(instance, "vkGetDisplayPlaneCapabilitiesKHR");
-		vkGetDisplayPlaneSupportedDisplaysKHR = cast(typeof(vkGetDisplayPlaneSupportedDisplaysKHR)) vkGetInstanceProcAddr(instance, "vkGetDisplayPlaneSupportedDisplaysKHR");
-		vkGetEventStatus = cast(typeof(vkGetEventStatus)) vkGetInstanceProcAddr(instance, "vkGetEventStatus");
-		vkGetFenceStatus = cast(typeof(vkGetFenceStatus)) vkGetInstanceProcAddr(instance, "vkGetFenceStatus");
-		vkGetImageMemoryRequirements = cast(typeof(vkGetImageMemoryRequirements)) vkGetInstanceProcAddr(instance, "vkGetImageMemoryRequirements");
-		vkGetImageSparseMemoryRequirements = cast(typeof(vkGetImageSparseMemoryRequirements)) vkGetInstanceProcAddr(instance, "vkGetImageSparseMemoryRequirements");
-		vkGetImageSubresourceLayout = cast(typeof(vkGetImageSubresourceLayout)) vkGetInstanceProcAddr(instance, "vkGetImageSubresourceLayout");
-		vkGetInstanceProcAddr = cast(typeof(vkGetInstanceProcAddr)) vkGetInstanceProcAddr(instance, "vkGetInstanceProcAddr");
-		vkGetPhysicalDeviceDisplayPlanePropertiesKHR = cast(typeof(vkGetPhysicalDeviceDisplayPlanePropertiesKHR)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR");
-		vkGetPhysicalDeviceDisplayPropertiesKHR = cast(typeof(vkGetPhysicalDeviceDisplayPropertiesKHR)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceDisplayPropertiesKHR");
-		vkGetPhysicalDeviceFeatures = cast(typeof(vkGetPhysicalDeviceFeatures)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceFeatures");
-		vkGetPhysicalDeviceFormatProperties = cast(typeof(vkGetPhysicalDeviceFormatProperties)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceFormatProperties");
-		vkGetPhysicalDeviceImageFormatProperties = cast(typeof(vkGetPhysicalDeviceImageFormatProperties)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceImageFormatProperties");
-		vkGetPhysicalDeviceMemoryProperties = cast(typeof(vkGetPhysicalDeviceMemoryProperties)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties");
-		vkGetPhysicalDeviceProperties = cast(typeof(vkGetPhysicalDeviceProperties)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceProperties");
-		vkGetPhysicalDeviceQueueFamilyProperties = cast(typeof(vkGetPhysicalDeviceQueueFamilyProperties)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyProperties");
-		vkGetPhysicalDeviceSparseImageFormatProperties = cast(typeof(vkGetPhysicalDeviceSparseImageFormatProperties)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSparseImageFormatProperties");
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR = cast(typeof(vkGetPhysicalDeviceSurfaceCapabilitiesKHR)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
-		vkGetPhysicalDeviceSurfaceFormatsKHR = cast(typeof(vkGetPhysicalDeviceSurfaceFormatsKHR)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceFormatsKHR");
-		vkGetPhysicalDeviceSurfacePresentModesKHR = cast(typeof(vkGetPhysicalDeviceSurfacePresentModesKHR)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfacePresentModesKHR");
-		vkGetPhysicalDeviceSurfaceSupportKHR = cast(typeof(vkGetPhysicalDeviceSurfaceSupportKHR)) vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR");
-		vkGetPipelineCacheData = cast(typeof(vkGetPipelineCacheData)) vkGetInstanceProcAddr(instance, "vkGetPipelineCacheData");
-		vkGetQueryPoolResults = cast(typeof(vkGetQueryPoolResults)) vkGetInstanceProcAddr(instance, "vkGetQueryPoolResults");
-		vkGetRenderAreaGranularity = cast(typeof(vkGetRenderAreaGranularity)) vkGetInstanceProcAddr(instance, "vkGetRenderAreaGranularity");
-		vkGetSwapchainImagesKHR = cast(typeof(vkGetSwapchainImagesKHR)) vkGetInstanceProcAddr(instance, "vkGetSwapchainImagesKHR");
-		vkInvalidateMappedMemoryRanges = cast(typeof(vkInvalidateMappedMemoryRanges)) vkGetInstanceProcAddr(instance, "vkInvalidateMappedMemoryRanges");
-		vkMapMemory = cast(typeof(vkMapMemory)) vkGetInstanceProcAddr(instance, "vkMapMemory");
-		vkMergePipelineCaches = cast(typeof(vkMergePipelineCaches)) vkGetInstanceProcAddr(instance, "vkMergePipelineCaches");
-		vkQueueBindSparse = cast(typeof(vkQueueBindSparse)) vkGetInstanceProcAddr(instance, "vkQueueBindSparse");
-		vkQueuePresentKHR = cast(typeof(vkQueuePresentKHR)) vkGetInstanceProcAddr(instance, "vkQueuePresentKHR");
-		vkQueueSubmit = cast(typeof(vkQueueSubmit)) vkGetInstanceProcAddr(instance, "vkQueueSubmit");
-		vkQueueWaitIdle = cast(typeof(vkQueueWaitIdle)) vkGetInstanceProcAddr(instance, "vkQueueWaitIdle");
-		vkResetCommandBuffer = cast(typeof(vkResetCommandBuffer)) vkGetInstanceProcAddr(instance, "vkResetCommandBuffer");
-		vkResetCommandPool = cast(typeof(vkResetCommandPool)) vkGetInstanceProcAddr(instance, "vkResetCommandPool");
-		vkResetDescriptorPool = cast(typeof(vkResetDescriptorPool)) vkGetInstanceProcAddr(instance, "vkResetDescriptorPool");
-		vkResetEvent = cast(typeof(vkResetEvent)) vkGetInstanceProcAddr(instance, "vkResetEvent");
-		vkResetFences = cast(typeof(vkResetFences)) vkGetInstanceProcAddr(instance, "vkResetFences");
-		vkSetEvent = cast(typeof(vkSetEvent)) vkGetInstanceProcAddr(instance, "vkSetEvent");
-		vkUnmapMemory = cast(typeof(vkUnmapMemory)) vkGetInstanceProcAddr(instance, "vkUnmapMemory");
-		vkUpdateDescriptorSets = cast(typeof(vkUpdateDescriptorSets)) vkGetInstanceProcAddr(instance, "vkUpdateDescriptorSets");
-		vkWaitForFences = cast(typeof(vkWaitForFences)) vkGetInstanceProcAddr(instance, "vkWaitForFences");
+		assert(vkGetInstanceProcAddr !is null, "Must call DVulkanLoader.loadInstanceFunctions before DVulkanLoader.loadAllFunctions");
+		
+		foreach(i, ref func; AllVulkanFunctions) {
+			static if(staticIndexOf!(AllVulkanFunctions[i].stringof,
+				"vkGetInstanceProcAddr",
+				"vkEnumerateInstanceExtensionProperties",
+				"vkEnumerateInstanceLayerProperties",
+				"vkCreateInstance",
+			) == -1) {
+				func = cast(typeof(func)) vkGetInstanceProcAddr(instance, AllVulkanFunctions[i].stringof);
+			}
+		}
 	}
-	
-	void loadAllFunctions(VkDevice device) {
+	static void loadAllFunctions(VkDevice device) {
 		assert(vkGetDeviceProcAddr !is null, "reload(VkDevice) must be called after reload(VkInstance)");
-
-		vkAcquireNextImageKHR = cast(typeof(vkAcquireNextImageKHR)) vkGetDeviceProcAddr(device, "vkAcquireNextImageKHR");
-		vkAllocateCommandBuffers = cast(typeof(vkAllocateCommandBuffers)) vkGetDeviceProcAddr(device, "vkAllocateCommandBuffers");
-		vkAllocateDescriptorSets = cast(typeof(vkAllocateDescriptorSets)) vkGetDeviceProcAddr(device, "vkAllocateDescriptorSets");
-		vkAllocateMemory = cast(typeof(vkAllocateMemory)) vkGetDeviceProcAddr(device, "vkAllocateMemory");
-		vkBeginCommandBuffer = cast(typeof(vkBeginCommandBuffer)) vkGetDeviceProcAddr(device, "vkBeginCommandBuffer");
-		vkBindBufferMemory = cast(typeof(vkBindBufferMemory)) vkGetDeviceProcAddr(device, "vkBindBufferMemory");
-		vkBindImageMemory = cast(typeof(vkBindImageMemory)) vkGetDeviceProcAddr(device, "vkBindImageMemory");
-		vkCmdBeginQuery = cast(typeof(vkCmdBeginQuery)) vkGetDeviceProcAddr(device, "vkCmdBeginQuery");
-		vkCmdBeginRenderPass = cast(typeof(vkCmdBeginRenderPass)) vkGetDeviceProcAddr(device, "vkCmdBeginRenderPass");
-		vkCmdBindDescriptorSets = cast(typeof(vkCmdBindDescriptorSets)) vkGetDeviceProcAddr(device, "vkCmdBindDescriptorSets");
-		vkCmdBindIndexBuffer = cast(typeof(vkCmdBindIndexBuffer)) vkGetDeviceProcAddr(device, "vkCmdBindIndexBuffer");
-		vkCmdBindPipeline = cast(typeof(vkCmdBindPipeline)) vkGetDeviceProcAddr(device, "vkCmdBindPipeline");
-		vkCmdBindVertexBuffers = cast(typeof(vkCmdBindVertexBuffers)) vkGetDeviceProcAddr(device, "vkCmdBindVertexBuffers");
-		vkCmdBlitImage = cast(typeof(vkCmdBlitImage)) vkGetDeviceProcAddr(device, "vkCmdBlitImage");
-		vkCmdClearAttachments = cast(typeof(vkCmdClearAttachments)) vkGetDeviceProcAddr(device, "vkCmdClearAttachments");
-		vkCmdClearColorImage = cast(typeof(vkCmdClearColorImage)) vkGetDeviceProcAddr(device, "vkCmdClearColorImage");
-		vkCmdClearDepthStencilImage = cast(typeof(vkCmdClearDepthStencilImage)) vkGetDeviceProcAddr(device, "vkCmdClearDepthStencilImage");
-		vkCmdCopyBuffer = cast(typeof(vkCmdCopyBuffer)) vkGetDeviceProcAddr(device, "vkCmdCopyBuffer");
-		vkCmdCopyBufferToImage = cast(typeof(vkCmdCopyBufferToImage)) vkGetDeviceProcAddr(device, "vkCmdCopyBufferToImage");
-		vkCmdCopyImage = cast(typeof(vkCmdCopyImage)) vkGetDeviceProcAddr(device, "vkCmdCopyImage");
-		vkCmdCopyImageToBuffer = cast(typeof(vkCmdCopyImageToBuffer)) vkGetDeviceProcAddr(device, "vkCmdCopyImageToBuffer");
-		vkCmdCopyQueryPoolResults = cast(typeof(vkCmdCopyQueryPoolResults)) vkGetDeviceProcAddr(device, "vkCmdCopyQueryPoolResults");
-		vkCmdDebugMarkerBeginEXT = cast(typeof(vkCmdDebugMarkerBeginEXT)) vkGetDeviceProcAddr(device, "vkCmdDebugMarkerBeginEXT");
-		vkCmdDebugMarkerEndEXT = cast(typeof(vkCmdDebugMarkerEndEXT)) vkGetDeviceProcAddr(device, "vkCmdDebugMarkerEndEXT");
-		vkCmdDebugMarkerInsertEXT = cast(typeof(vkCmdDebugMarkerInsertEXT)) vkGetDeviceProcAddr(device, "vkCmdDebugMarkerInsertEXT");
-		vkCmdDispatch = cast(typeof(vkCmdDispatch)) vkGetDeviceProcAddr(device, "vkCmdDispatch");
-		vkCmdDispatchIndirect = cast(typeof(vkCmdDispatchIndirect)) vkGetDeviceProcAddr(device, "vkCmdDispatchIndirect");
-		vkCmdDraw = cast(typeof(vkCmdDraw)) vkGetDeviceProcAddr(device, "vkCmdDraw");
-		vkCmdDrawIndexed = cast(typeof(vkCmdDrawIndexed)) vkGetDeviceProcAddr(device, "vkCmdDrawIndexed");
-		vkCmdDrawIndexedIndirect = cast(typeof(vkCmdDrawIndexedIndirect)) vkGetDeviceProcAddr(device, "vkCmdDrawIndexedIndirect");
-		vkCmdDrawIndirect = cast(typeof(vkCmdDrawIndirect)) vkGetDeviceProcAddr(device, "vkCmdDrawIndirect");
-		vkCmdEndQuery = cast(typeof(vkCmdEndQuery)) vkGetDeviceProcAddr(device, "vkCmdEndQuery");
-		vkCmdEndRenderPass = cast(typeof(vkCmdEndRenderPass)) vkGetDeviceProcAddr(device, "vkCmdEndRenderPass");
-		vkCmdExecuteCommands = cast(typeof(vkCmdExecuteCommands)) vkGetDeviceProcAddr(device, "vkCmdExecuteCommands");
-		vkCmdFillBuffer = cast(typeof(vkCmdFillBuffer)) vkGetDeviceProcAddr(device, "vkCmdFillBuffer");
-		vkCmdNextSubpass = cast(typeof(vkCmdNextSubpass)) vkGetDeviceProcAddr(device, "vkCmdNextSubpass");
-		vkCmdPipelineBarrier = cast(typeof(vkCmdPipelineBarrier)) vkGetDeviceProcAddr(device, "vkCmdPipelineBarrier");
-		vkCmdPushConstants = cast(typeof(vkCmdPushConstants)) vkGetDeviceProcAddr(device, "vkCmdPushConstants");
-		vkCmdResetEvent = cast(typeof(vkCmdResetEvent)) vkGetDeviceProcAddr(device, "vkCmdResetEvent");
-		vkCmdResetQueryPool = cast(typeof(vkCmdResetQueryPool)) vkGetDeviceProcAddr(device, "vkCmdResetQueryPool");
-		vkCmdResolveImage = cast(typeof(vkCmdResolveImage)) vkGetDeviceProcAddr(device, "vkCmdResolveImage");
-		vkCmdSetBlendConstants = cast(typeof(vkCmdSetBlendConstants)) vkGetDeviceProcAddr(device, "vkCmdSetBlendConstants");
-		vkCmdSetDepthBias = cast(typeof(vkCmdSetDepthBias)) vkGetDeviceProcAddr(device, "vkCmdSetDepthBias");
-		vkCmdSetDepthBounds = cast(typeof(vkCmdSetDepthBounds)) vkGetDeviceProcAddr(device, "vkCmdSetDepthBounds");
-		vkCmdSetEvent = cast(typeof(vkCmdSetEvent)) vkGetDeviceProcAddr(device, "vkCmdSetEvent");
-		vkCmdSetLineWidth = cast(typeof(vkCmdSetLineWidth)) vkGetDeviceProcAddr(device, "vkCmdSetLineWidth");
-		vkCmdSetScissor = cast(typeof(vkCmdSetScissor)) vkGetDeviceProcAddr(device, "vkCmdSetScissor");
-		vkCmdSetStencilCompareMask = cast(typeof(vkCmdSetStencilCompareMask)) vkGetDeviceProcAddr(device, "vkCmdSetStencilCompareMask");
-		vkCmdSetStencilReference = cast(typeof(vkCmdSetStencilReference)) vkGetDeviceProcAddr(device, "vkCmdSetStencilReference");
-		vkCmdSetStencilWriteMask = cast(typeof(vkCmdSetStencilWriteMask)) vkGetDeviceProcAddr(device, "vkCmdSetStencilWriteMask");
-		vkCmdSetViewport = cast(typeof(vkCmdSetViewport)) vkGetDeviceProcAddr(device, "vkCmdSetViewport");
-		vkCmdUpdateBuffer = cast(typeof(vkCmdUpdateBuffer)) vkGetDeviceProcAddr(device, "vkCmdUpdateBuffer");
-		vkCmdWaitEvents = cast(typeof(vkCmdWaitEvents)) vkGetDeviceProcAddr(device, "vkCmdWaitEvents");
-		vkCmdWriteTimestamp = cast(typeof(vkCmdWriteTimestamp)) vkGetDeviceProcAddr(device, "vkCmdWriteTimestamp");
-		vkCreateBuffer = cast(typeof(vkCreateBuffer)) vkGetDeviceProcAddr(device, "vkCreateBuffer");
-		vkCreateBufferView = cast(typeof(vkCreateBufferView)) vkGetDeviceProcAddr(device, "vkCreateBufferView");
-		vkCreateCommandPool = cast(typeof(vkCreateCommandPool)) vkGetDeviceProcAddr(device, "vkCreateCommandPool");
-		vkCreateComputePipelines = cast(typeof(vkCreateComputePipelines)) vkGetDeviceProcAddr(device, "vkCreateComputePipelines");
-		vkCreateDebugReportCallbackEXT = cast(typeof(vkCreateDebugReportCallbackEXT)) vkGetDeviceProcAddr(device, "vkCreateDebugReportCallbackEXT");
-		vkCreateDescriptorPool = cast(typeof(vkCreateDescriptorPool)) vkGetDeviceProcAddr(device, "vkCreateDescriptorPool");
-		vkCreateDescriptorSetLayout = cast(typeof(vkCreateDescriptorSetLayout)) vkGetDeviceProcAddr(device, "vkCreateDescriptorSetLayout");
-		vkCreateDevice = cast(typeof(vkCreateDevice)) vkGetDeviceProcAddr(device, "vkCreateDevice");
-		vkCreateDisplayModeKHR = cast(typeof(vkCreateDisplayModeKHR)) vkGetDeviceProcAddr(device, "vkCreateDisplayModeKHR");
-		vkCreateDisplayPlaneSurfaceKHR = cast(typeof(vkCreateDisplayPlaneSurfaceKHR)) vkGetDeviceProcAddr(device, "vkCreateDisplayPlaneSurfaceKHR");
-		vkCreateEvent = cast(typeof(vkCreateEvent)) vkGetDeviceProcAddr(device, "vkCreateEvent");
-		vkCreateFence = cast(typeof(vkCreateFence)) vkGetDeviceProcAddr(device, "vkCreateFence");
-		vkCreateFramebuffer = cast(typeof(vkCreateFramebuffer)) vkGetDeviceProcAddr(device, "vkCreateFramebuffer");
-		vkCreateGraphicsPipelines = cast(typeof(vkCreateGraphicsPipelines)) vkGetDeviceProcAddr(device, "vkCreateGraphicsPipelines");
-		vkCreateImage = cast(typeof(vkCreateImage)) vkGetDeviceProcAddr(device, "vkCreateImage");
-		vkCreateImageView = cast(typeof(vkCreateImageView)) vkGetDeviceProcAddr(device, "vkCreateImageView");
-		vkCreatePipelineCache = cast(typeof(vkCreatePipelineCache)) vkGetDeviceProcAddr(device, "vkCreatePipelineCache");
-		vkCreatePipelineLayout = cast(typeof(vkCreatePipelineLayout)) vkGetDeviceProcAddr(device, "vkCreatePipelineLayout");
-		vkCreateQueryPool = cast(typeof(vkCreateQueryPool)) vkGetDeviceProcAddr(device, "vkCreateQueryPool");
-		vkCreateRenderPass = cast(typeof(vkCreateRenderPass)) vkGetDeviceProcAddr(device, "vkCreateRenderPass");
-		vkCreateSampler = cast(typeof(vkCreateSampler)) vkGetDeviceProcAddr(device, "vkCreateSampler");
-		vkCreateSemaphore = cast(typeof(vkCreateSemaphore)) vkGetDeviceProcAddr(device, "vkCreateSemaphore");
-		vkCreateShaderModule = cast(typeof(vkCreateShaderModule)) vkGetDeviceProcAddr(device, "vkCreateShaderModule");
-		vkCreateSharedSwapchainsKHR = cast(typeof(vkCreateSharedSwapchainsKHR)) vkGetDeviceProcAddr(device, "vkCreateSharedSwapchainsKHR");
-		vkCreateSwapchainKHR = cast(typeof(vkCreateSwapchainKHR)) vkGetDeviceProcAddr(device, "vkCreateSwapchainKHR");
-		vkDebugMarkerSetObjectNameEXT = cast(typeof(vkDebugMarkerSetObjectNameEXT)) vkGetDeviceProcAddr(device, "vkDebugMarkerSetObjectNameEXT");
-		vkDebugMarkerSetObjectTagEXT = cast(typeof(vkDebugMarkerSetObjectTagEXT)) vkGetDeviceProcAddr(device, "vkDebugMarkerSetObjectTagEXT");
-		vkDebugReportMessageEXT = cast(typeof(vkDebugReportMessageEXT)) vkGetDeviceProcAddr(device, "vkDebugReportMessageEXT");
-		vkDestroyBuffer = cast(typeof(vkDestroyBuffer)) vkGetDeviceProcAddr(device, "vkDestroyBuffer");
-		vkDestroyBufferView = cast(typeof(vkDestroyBufferView)) vkGetDeviceProcAddr(device, "vkDestroyBufferView");
-		vkDestroyCommandPool = cast(typeof(vkDestroyCommandPool)) vkGetDeviceProcAddr(device, "vkDestroyCommandPool");
-		vkDestroyDebugReportCallbackEXT = cast(typeof(vkDestroyDebugReportCallbackEXT)) vkGetDeviceProcAddr(device, "vkDestroyDebugReportCallbackEXT");
-		vkDestroyDescriptorPool = cast(typeof(vkDestroyDescriptorPool)) vkGetDeviceProcAddr(device, "vkDestroyDescriptorPool");
-		vkDestroyDescriptorSetLayout = cast(typeof(vkDestroyDescriptorSetLayout)) vkGetDeviceProcAddr(device, "vkDestroyDescriptorSetLayout");
-		vkDestroyDevice = cast(typeof(vkDestroyDevice)) vkGetDeviceProcAddr(device, "vkDestroyDevice");
-		vkDestroyEvent = cast(typeof(vkDestroyEvent)) vkGetDeviceProcAddr(device, "vkDestroyEvent");
-		vkDestroyFence = cast(typeof(vkDestroyFence)) vkGetDeviceProcAddr(device, "vkDestroyFence");
-		vkDestroyFramebuffer = cast(typeof(vkDestroyFramebuffer)) vkGetDeviceProcAddr(device, "vkDestroyFramebuffer");
-		vkDestroyImage = cast(typeof(vkDestroyImage)) vkGetDeviceProcAddr(device, "vkDestroyImage");
-		vkDestroyImageView = cast(typeof(vkDestroyImageView)) vkGetDeviceProcAddr(device, "vkDestroyImageView");
-		vkDestroyInstance = cast(typeof(vkDestroyInstance)) vkGetDeviceProcAddr(device, "vkDestroyInstance");
-		vkDestroyPipeline = cast(typeof(vkDestroyPipeline)) vkGetDeviceProcAddr(device, "vkDestroyPipeline");
-		vkDestroyPipelineCache = cast(typeof(vkDestroyPipelineCache)) vkGetDeviceProcAddr(device, "vkDestroyPipelineCache");
-		vkDestroyPipelineLayout = cast(typeof(vkDestroyPipelineLayout)) vkGetDeviceProcAddr(device, "vkDestroyPipelineLayout");
-		vkDestroyQueryPool = cast(typeof(vkDestroyQueryPool)) vkGetDeviceProcAddr(device, "vkDestroyQueryPool");
-		vkDestroyRenderPass = cast(typeof(vkDestroyRenderPass)) vkGetDeviceProcAddr(device, "vkDestroyRenderPass");
-		vkDestroySampler = cast(typeof(vkDestroySampler)) vkGetDeviceProcAddr(device, "vkDestroySampler");
-		vkDestroySemaphore = cast(typeof(vkDestroySemaphore)) vkGetDeviceProcAddr(device, "vkDestroySemaphore");
-		vkDestroyShaderModule = cast(typeof(vkDestroyShaderModule)) vkGetDeviceProcAddr(device, "vkDestroyShaderModule");
-		vkDestroySurfaceKHR = cast(typeof(vkDestroySurfaceKHR)) vkGetDeviceProcAddr(device, "vkDestroySurfaceKHR");
-		vkDestroySwapchainKHR = cast(typeof(vkDestroySwapchainKHR)) vkGetDeviceProcAddr(device, "vkDestroySwapchainKHR");
-		vkDeviceWaitIdle = cast(typeof(vkDeviceWaitIdle)) vkGetDeviceProcAddr(device, "vkDeviceWaitIdle");
-		vkEndCommandBuffer = cast(typeof(vkEndCommandBuffer)) vkGetDeviceProcAddr(device, "vkEndCommandBuffer");
-		vkEnumerateDeviceExtensionProperties = cast(typeof(vkEnumerateDeviceExtensionProperties)) vkGetDeviceProcAddr(device, "vkEnumerateDeviceExtensionProperties");
-		vkEnumerateDeviceLayerProperties = cast(typeof(vkEnumerateDeviceLayerProperties)) vkGetDeviceProcAddr(device, "vkEnumerateDeviceLayerProperties");
-		vkEnumeratePhysicalDevices = cast(typeof(vkEnumeratePhysicalDevices)) vkGetDeviceProcAddr(device, "vkEnumeratePhysicalDevices");
-		vkFlushMappedMemoryRanges = cast(typeof(vkFlushMappedMemoryRanges)) vkGetDeviceProcAddr(device, "vkFlushMappedMemoryRanges");
-		vkFreeCommandBuffers = cast(typeof(vkFreeCommandBuffers)) vkGetDeviceProcAddr(device, "vkFreeCommandBuffers");
-		vkFreeDescriptorSets = cast(typeof(vkFreeDescriptorSets)) vkGetDeviceProcAddr(device, "vkFreeDescriptorSets");
-		vkFreeMemory = cast(typeof(vkFreeMemory)) vkGetDeviceProcAddr(device, "vkFreeMemory");
-		vkGetBufferMemoryRequirements = cast(typeof(vkGetBufferMemoryRequirements)) vkGetDeviceProcAddr(device, "vkGetBufferMemoryRequirements");
-		vkGetDeviceMemoryCommitment = cast(typeof(vkGetDeviceMemoryCommitment)) vkGetDeviceProcAddr(device, "vkGetDeviceMemoryCommitment");
-		vkGetDeviceQueue = cast(typeof(vkGetDeviceQueue)) vkGetDeviceProcAddr(device, "vkGetDeviceQueue");
-		vkGetDisplayModePropertiesKHR = cast(typeof(vkGetDisplayModePropertiesKHR)) vkGetDeviceProcAddr(device, "vkGetDisplayModePropertiesKHR");
-		vkGetDisplayPlaneCapabilitiesKHR = cast(typeof(vkGetDisplayPlaneCapabilitiesKHR)) vkGetDeviceProcAddr(device, "vkGetDisplayPlaneCapabilitiesKHR");
-		vkGetDisplayPlaneSupportedDisplaysKHR = cast(typeof(vkGetDisplayPlaneSupportedDisplaysKHR)) vkGetDeviceProcAddr(device, "vkGetDisplayPlaneSupportedDisplaysKHR");
-		vkGetEventStatus = cast(typeof(vkGetEventStatus)) vkGetDeviceProcAddr(device, "vkGetEventStatus");
-		vkGetFenceStatus = cast(typeof(vkGetFenceStatus)) vkGetDeviceProcAddr(device, "vkGetFenceStatus");
-		vkGetImageMemoryRequirements = cast(typeof(vkGetImageMemoryRequirements)) vkGetDeviceProcAddr(device, "vkGetImageMemoryRequirements");
-		vkGetImageSparseMemoryRequirements = cast(typeof(vkGetImageSparseMemoryRequirements)) vkGetDeviceProcAddr(device, "vkGetImageSparseMemoryRequirements");
-		vkGetImageSubresourceLayout = cast(typeof(vkGetImageSubresourceLayout)) vkGetDeviceProcAddr(device, "vkGetImageSubresourceLayout");
-		vkGetInstanceProcAddr = cast(typeof(vkGetInstanceProcAddr)) vkGetDeviceProcAddr(device, "vkGetInstanceProcAddr");
-		vkGetPhysicalDeviceDisplayPlanePropertiesKHR = cast(typeof(vkGetPhysicalDeviceDisplayPlanePropertiesKHR)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR");
-		vkGetPhysicalDeviceDisplayPropertiesKHR = cast(typeof(vkGetPhysicalDeviceDisplayPropertiesKHR)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceDisplayPropertiesKHR");
-		vkGetPhysicalDeviceFeatures = cast(typeof(vkGetPhysicalDeviceFeatures)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceFeatures");
-		vkGetPhysicalDeviceFormatProperties = cast(typeof(vkGetPhysicalDeviceFormatProperties)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceFormatProperties");
-		vkGetPhysicalDeviceImageFormatProperties = cast(typeof(vkGetPhysicalDeviceImageFormatProperties)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceImageFormatProperties");
-		vkGetPhysicalDeviceMemoryProperties = cast(typeof(vkGetPhysicalDeviceMemoryProperties)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceMemoryProperties");
-		vkGetPhysicalDeviceProperties = cast(typeof(vkGetPhysicalDeviceProperties)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceProperties");
-		vkGetPhysicalDeviceQueueFamilyProperties = cast(typeof(vkGetPhysicalDeviceQueueFamilyProperties)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceQueueFamilyProperties");
-		vkGetPhysicalDeviceSparseImageFormatProperties = cast(typeof(vkGetPhysicalDeviceSparseImageFormatProperties)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceSparseImageFormatProperties");
-		vkGetPhysicalDeviceSurfaceCapabilitiesKHR = cast(typeof(vkGetPhysicalDeviceSurfaceCapabilitiesKHR)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
-		vkGetPhysicalDeviceSurfaceFormatsKHR = cast(typeof(vkGetPhysicalDeviceSurfaceFormatsKHR)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceSurfaceFormatsKHR");
-		vkGetPhysicalDeviceSurfacePresentModesKHR = cast(typeof(vkGetPhysicalDeviceSurfacePresentModesKHR)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceSurfacePresentModesKHR");
-		vkGetPhysicalDeviceSurfaceSupportKHR = cast(typeof(vkGetPhysicalDeviceSurfaceSupportKHR)) vkGetDeviceProcAddr(device, "vkGetPhysicalDeviceSurfaceSupportKHR");
-		vkGetPipelineCacheData = cast(typeof(vkGetPipelineCacheData)) vkGetDeviceProcAddr(device, "vkGetPipelineCacheData");
-		vkGetQueryPoolResults = cast(typeof(vkGetQueryPoolResults)) vkGetDeviceProcAddr(device, "vkGetQueryPoolResults");
-		vkGetRenderAreaGranularity = cast(typeof(vkGetRenderAreaGranularity)) vkGetDeviceProcAddr(device, "vkGetRenderAreaGranularity");
-		vkGetSwapchainImagesKHR = cast(typeof(vkGetSwapchainImagesKHR)) vkGetDeviceProcAddr(device, "vkGetSwapchainImagesKHR");
-		vkInvalidateMappedMemoryRanges = cast(typeof(vkInvalidateMappedMemoryRanges)) vkGetDeviceProcAddr(device, "vkInvalidateMappedMemoryRanges");
-		vkMapMemory = cast(typeof(vkMapMemory)) vkGetDeviceProcAddr(device, "vkMapMemory");
-		vkMergePipelineCaches = cast(typeof(vkMergePipelineCaches)) vkGetDeviceProcAddr(device, "vkMergePipelineCaches");
-		vkQueueBindSparse = cast(typeof(vkQueueBindSparse)) vkGetDeviceProcAddr(device, "vkQueueBindSparse");
-		vkQueuePresentKHR = cast(typeof(vkQueuePresentKHR)) vkGetDeviceProcAddr(device, "vkQueuePresentKHR");
-		vkQueueSubmit = cast(typeof(vkQueueSubmit)) vkGetDeviceProcAddr(device, "vkQueueSubmit");
-		vkQueueWaitIdle = cast(typeof(vkQueueWaitIdle)) vkGetDeviceProcAddr(device, "vkQueueWaitIdle");
-		vkResetCommandBuffer = cast(typeof(vkResetCommandBuffer)) vkGetDeviceProcAddr(device, "vkResetCommandBuffer");
-		vkResetCommandPool = cast(typeof(vkResetCommandPool)) vkGetDeviceProcAddr(device, "vkResetCommandPool");
-		vkResetDescriptorPool = cast(typeof(vkResetDescriptorPool)) vkGetDeviceProcAddr(device, "vkResetDescriptorPool");
-		vkResetEvent = cast(typeof(vkResetEvent)) vkGetDeviceProcAddr(device, "vkResetEvent");
-		vkResetFences = cast(typeof(vkResetFences)) vkGetDeviceProcAddr(device, "vkResetFences");
-		vkSetEvent = cast(typeof(vkSetEvent)) vkGetDeviceProcAddr(device, "vkSetEvent");
-		vkUnmapMemory = cast(typeof(vkUnmapMemory)) vkGetDeviceProcAddr(device, "vkUnmapMemory");
-		vkUpdateDescriptorSets = cast(typeof(vkUpdateDescriptorSets)) vkGetDeviceProcAddr(device, "vkUpdateDescriptorSets");
-		vkWaitForFences = cast(typeof(vkWaitForFences)) vkGetDeviceProcAddr(device, "vkWaitForFences");
+		
+		foreach(i, ref func; AllVulkanFunctions) {
+			static if(Parameters!func.length > 0 && staticIndexOf!(Parameters!func[0],
+				VkDevice, VkQueue, VkCommandBuffer
+			) != -1) {
+				func = cast(typeof(func)) vkGetDeviceProcAddr(device, AllVulkanFunctions[i].stringof);
+			}
+		}
 	}
 }
 

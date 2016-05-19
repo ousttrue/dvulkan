@@ -73,7 +73,9 @@ version(X86_64) {
 DYNAMIC_HEADER = """
 module PKGPREFIX.functions;
 
-public import PKGPREFIX.types;
+import PKGPREFIX.types;
+import std.typetuple;
+import std.traits : Parameters;
 
 extern(System) @nogc nothrow {
 """
@@ -135,10 +137,21 @@ class DGenerator(OutputGenerator):
 	def endFile(self):
 		print("}", file=self.dynamicFile)
 		
+		funcNames = sorted(self.funcNames)
+		
 		print("__gshared {", file=self.dynamicFile)
-		for name in sorted(self.funcNames):
+		for name in funcNames:
 			print("\tPFN_%s %s;" % (name, name), file=self.dynamicFile)
 		print("""}
+
+alias AllVulkanFunctions = TypeTuple!(
+""", file=self.dynamicFile)
+		
+		for name in funcNames:
+			print("\t"+name+",", file=self.dynamicFile)
+		
+		print("""
+);
 
 struct NAMEPREFIXLoader {
 	@disable this();
@@ -152,24 +165,30 @@ struct NAMEPREFIXLoader {
 	}
 	
 	static void loadAllFunctions(VkInstance instance) {
-		assert(vkGetInstanceProcAddr !is null, "Must call NAMEPREFIXLoader.loadInstanceFunctions before NAMEPREFIXLOADER.loadAllFunctions");
-""".replace("NAMEPREFIX", self.genOpts.nameprefix), file=self.dynamicFile)
+		assert(vkGetInstanceProcAddr !is null, "Must call NAMEPREFIXLoader.loadInstanceFunctions before NAMEPREFIXLoader.loadAllFunctions");
 		
-		self.funcNames.difference_update({"vkGetDeviceProcAddr", "vkEnumerateInstanceExtensionProperties", "vkEnumerateInstanceLayerProperties", "vkCreateInstance"})
-		for name in sorted(self.funcNames):
-			print("\t\t{0} = cast(typeof({0})) vkGetInstanceProcAddr(instance, \"{0}\");".format(name), file=self.dynamicFile)
-		
-		print("""	}
-	
-	void loadAllFunctions(VkDevice device) {
+		foreach(i, ref func; AllVulkanFunctions) {
+			static if(staticIndexOf!(AllVulkanFunctions[i].stringof,
+				"vkGetInstanceProcAddr",
+				"vkEnumerateInstanceExtensionProperties",
+				"vkEnumerateInstanceLayerProperties",
+				"vkCreateInstance",
+			) == -1) {
+				func = cast(typeof(func)) vkGetInstanceProcAddr(instance, AllVulkanFunctions[i].stringof);
+			}
+		}
+	}
+	static void loadAllFunctions(VkDevice device) {
 		assert(vkGetDeviceProcAddr !is null, "reload(VkDevice) must be called after reload(VkInstance)");
-""", file=self.dynamicFile)
 		
-		for name in sorted(self.funcNames):
-			print("\t\t{0} = cast(typeof({0})) vkGetDeviceProcAddr(device, \"{0}\");".format(name), file=self.dynamicFile)
-		
-		
-		print("""	}
+		foreach(i, ref func; AllVulkanFunctions) {
+			static if(Parameters!func.length > 0 && staticIndexOf!(Parameters!func[0],
+				VkDevice, VkQueue, VkCommandBuffer
+			) != -1) {
+				func = cast(typeof(func)) vkGetDeviceProcAddr(device, AllVulkanFunctions[i].stringof);
+			}
+		}
+	}
 }
 
 version(NAMEPREFIXLoadFromDerelict) {
