@@ -163,6 +163,11 @@ extern(System) @nogc nothrow {
 	alias PFN_vkCreateDebugReportCallbackEXT = VkResult function(VkInstance instance,const(VkDebugReportCallbackCreateInfoEXT)* pCreateInfo,const(VkAllocationCallbacks)* pAllocator,VkDebugReportCallbackEXT* pCallback);
 	alias PFN_vkDestroyDebugReportCallbackEXT = void function(VkInstance instance,VkDebugReportCallbackEXT callback,const(VkAllocationCallbacks)* pAllocator);
 	alias PFN_vkDebugReportMessageEXT = void function(VkInstance instance,VkDebugReportFlagsEXT flags,VkDebugReportObjectTypeEXT objectType,uint64_t object,size_t location,int32_t messageCode,const(char)* pLayerPrefix,const(char)* pMessage);
+	alias PFN_vkDebugMarkerSetObjectTagEXT = VkResult function(VkDevice device,VkDebugMarkerObjectTagInfoEXT* pTagInfo);
+	alias PFN_vkDebugMarkerSetObjectNameEXT = VkResult function(VkDevice device,VkDebugMarkerObjectNameInfoEXT* pNameInfo);
+	alias PFN_vkCmdDebugMarkerBeginEXT = void function(VkCommandBuffer commandBuffer,VkDebugMarkerMarkerInfoEXT* pMarkerInfo);
+	alias PFN_vkCmdDebugMarkerEndEXT = void function(VkCommandBuffer commandBuffer);
+	alias PFN_vkCmdDebugMarkerInsertEXT = void function(VkCommandBuffer commandBuffer,VkDebugMarkerMarkerInfoEXT* pMarkerInfo);
 }
 __gshared {
 	PFN_vkAcquireNextImageKHR vkAcquireNextImageKHR;
@@ -187,6 +192,9 @@ __gshared {
 	PFN_vkCmdCopyImage vkCmdCopyImage;
 	PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer;
 	PFN_vkCmdCopyQueryPoolResults vkCmdCopyQueryPoolResults;
+	PFN_vkCmdDebugMarkerBeginEXT vkCmdDebugMarkerBeginEXT;
+	PFN_vkCmdDebugMarkerEndEXT vkCmdDebugMarkerEndEXT;
+	PFN_vkCmdDebugMarkerInsertEXT vkCmdDebugMarkerInsertEXT;
 	PFN_vkCmdDispatch vkCmdDispatch;
 	PFN_vkCmdDispatchIndirect vkCmdDispatchIndirect;
 	PFN_vkCmdDraw vkCmdDraw;
@@ -242,6 +250,8 @@ __gshared {
 	PFN_vkCreateShaderModule vkCreateShaderModule;
 	PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR;
 	PFN_vkCreateSwapchainKHR vkCreateSwapchainKHR;
+	PFN_vkDebugMarkerSetObjectNameEXT vkDebugMarkerSetObjectNameEXT;
+	PFN_vkDebugMarkerSetObjectTagEXT vkDebugMarkerSetObjectTagEXT;
 	PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT;
 	PFN_vkDestroyBuffer vkDestroyBuffer;
 	PFN_vkDestroyBufferView vkDestroyBufferView;
@@ -361,6 +371,9 @@ struct DVulkanLoader {
 		vkCmdCopyImage = cast(typeof(vkCmdCopyImage)) vkGetInstanceProcAddr(instance, "vkCmdCopyImage");
 		vkCmdCopyImageToBuffer = cast(typeof(vkCmdCopyImageToBuffer)) vkGetInstanceProcAddr(instance, "vkCmdCopyImageToBuffer");
 		vkCmdCopyQueryPoolResults = cast(typeof(vkCmdCopyQueryPoolResults)) vkGetInstanceProcAddr(instance, "vkCmdCopyQueryPoolResults");
+		vkCmdDebugMarkerBeginEXT = cast(typeof(vkCmdDebugMarkerBeginEXT)) vkGetInstanceProcAddr(instance, "vkCmdDebugMarkerBeginEXT");
+		vkCmdDebugMarkerEndEXT = cast(typeof(vkCmdDebugMarkerEndEXT)) vkGetInstanceProcAddr(instance, "vkCmdDebugMarkerEndEXT");
+		vkCmdDebugMarkerInsertEXT = cast(typeof(vkCmdDebugMarkerInsertEXT)) vkGetInstanceProcAddr(instance, "vkCmdDebugMarkerInsertEXT");
 		vkCmdDispatch = cast(typeof(vkCmdDispatch)) vkGetInstanceProcAddr(instance, "vkCmdDispatch");
 		vkCmdDispatchIndirect = cast(typeof(vkCmdDispatchIndirect)) vkGetInstanceProcAddr(instance, "vkCmdDispatchIndirect");
 		vkCmdDraw = cast(typeof(vkCmdDraw)) vkGetInstanceProcAddr(instance, "vkCmdDraw");
@@ -415,6 +428,8 @@ struct DVulkanLoader {
 		vkCreateShaderModule = cast(typeof(vkCreateShaderModule)) vkGetInstanceProcAddr(instance, "vkCreateShaderModule");
 		vkCreateSharedSwapchainsKHR = cast(typeof(vkCreateSharedSwapchainsKHR)) vkGetInstanceProcAddr(instance, "vkCreateSharedSwapchainsKHR");
 		vkCreateSwapchainKHR = cast(typeof(vkCreateSwapchainKHR)) vkGetInstanceProcAddr(instance, "vkCreateSwapchainKHR");
+		vkDebugMarkerSetObjectNameEXT = cast(typeof(vkDebugMarkerSetObjectNameEXT)) vkGetInstanceProcAddr(instance, "vkDebugMarkerSetObjectNameEXT");
+		vkDebugMarkerSetObjectTagEXT = cast(typeof(vkDebugMarkerSetObjectTagEXT)) vkGetInstanceProcAddr(instance, "vkDebugMarkerSetObjectTagEXT");
 		vkDebugReportMessageEXT = cast(typeof(vkDebugReportMessageEXT)) vkGetInstanceProcAddr(instance, "vkDebugReportMessageEXT");
 		vkDestroyBuffer = cast(typeof(vkDestroyBuffer)) vkGetInstanceProcAddr(instance, "vkDestroyBuffer");
 		vkDestroyBufferView = cast(typeof(vkDestroyBufferView)) vkGetInstanceProcAddr(instance, "vkDestroyBufferView");
@@ -520,6 +535,9 @@ struct DVulkanLoader {
 		vkCmdCopyImage = cast(typeof(vkCmdCopyImage)) vkGetDeviceProcAddr(device, "vkCmdCopyImage");
 		vkCmdCopyImageToBuffer = cast(typeof(vkCmdCopyImageToBuffer)) vkGetDeviceProcAddr(device, "vkCmdCopyImageToBuffer");
 		vkCmdCopyQueryPoolResults = cast(typeof(vkCmdCopyQueryPoolResults)) vkGetDeviceProcAddr(device, "vkCmdCopyQueryPoolResults");
+		vkCmdDebugMarkerBeginEXT = cast(typeof(vkCmdDebugMarkerBeginEXT)) vkGetDeviceProcAddr(device, "vkCmdDebugMarkerBeginEXT");
+		vkCmdDebugMarkerEndEXT = cast(typeof(vkCmdDebugMarkerEndEXT)) vkGetDeviceProcAddr(device, "vkCmdDebugMarkerEndEXT");
+		vkCmdDebugMarkerInsertEXT = cast(typeof(vkCmdDebugMarkerInsertEXT)) vkGetDeviceProcAddr(device, "vkCmdDebugMarkerInsertEXT");
 		vkCmdDispatch = cast(typeof(vkCmdDispatch)) vkGetDeviceProcAddr(device, "vkCmdDispatch");
 		vkCmdDispatchIndirect = cast(typeof(vkCmdDispatchIndirect)) vkGetDeviceProcAddr(device, "vkCmdDispatchIndirect");
 		vkCmdDraw = cast(typeof(vkCmdDraw)) vkGetDeviceProcAddr(device, "vkCmdDraw");
@@ -574,6 +592,8 @@ struct DVulkanLoader {
 		vkCreateShaderModule = cast(typeof(vkCreateShaderModule)) vkGetDeviceProcAddr(device, "vkCreateShaderModule");
 		vkCreateSharedSwapchainsKHR = cast(typeof(vkCreateSharedSwapchainsKHR)) vkGetDeviceProcAddr(device, "vkCreateSharedSwapchainsKHR");
 		vkCreateSwapchainKHR = cast(typeof(vkCreateSwapchainKHR)) vkGetDeviceProcAddr(device, "vkCreateSwapchainKHR");
+		vkDebugMarkerSetObjectNameEXT = cast(typeof(vkDebugMarkerSetObjectNameEXT)) vkGetDeviceProcAddr(device, "vkDebugMarkerSetObjectNameEXT");
+		vkDebugMarkerSetObjectTagEXT = cast(typeof(vkDebugMarkerSetObjectTagEXT)) vkGetDeviceProcAddr(device, "vkDebugMarkerSetObjectTagEXT");
 		vkDebugReportMessageEXT = cast(typeof(vkDebugReportMessageEXT)) vkGetDeviceProcAddr(device, "vkDebugReportMessageEXT");
 		vkDestroyBuffer = cast(typeof(vkDestroyBuffer)) vkGetDeviceProcAddr(device, "vkDestroyBuffer");
 		vkDestroyBufferView = cast(typeof(vkDestroyBufferView)) vkGetDeviceProcAddr(device, "vkDestroyBufferView");

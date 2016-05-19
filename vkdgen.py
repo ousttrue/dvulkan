@@ -303,6 +303,8 @@ version(NAMEPREFIXLoadFromDerelict) {
 		_,strVal = self.enumToValue(enuminfo.elem, False)
 		if strVal == "VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT":
 			strVal = "VkStructureType."+strVal
+		elif strVal == "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR":
+			strVal = "VkColorSpaceKHR."+strVal
 		strVal = re.sub(re_long_int, "\g<1>UL", strVal)
 		print("enum %s = %s;" % (name, strVal), file=self.typesFile)
 		
