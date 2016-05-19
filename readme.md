@@ -24,7 +24,7 @@ To use in the `default` configuration:
 To use in the `with-derelict-loader` configuration, follow the above steps, but call `DVulkanDerelict.load()` instead of performing steps two and three.
 
 The API is similar to the C Vulkan API, but with some differences:
-* Since enums in D are not global, you need to specify the enum type. Ex: `VkResult.VK_SUCCESS` instead of just `VK_SUCCESS`.
+* Since enums in D are not global, you need to specify the enum type. Ex: `VkResult.VK_SUCCESS` instead of just `VK_SUCCESS`. The `DVulkanGlobalEnums` version defines global aliases to enums, making them work like C enums.
 * All structures have their `sType` field set to the appropriate value upon initialization; explicit initialization is not needed.
 * `VkPipelineShaderStageCreateInfo.module` has been renamed to `VkPipelineShaderStageCreateInfo._module`, since `module` is a D keyword.
 
