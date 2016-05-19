@@ -550,6 +550,8 @@ version(DVulkanLoadFromDerelict) {
 	private {
 		version(Windows)
 			enum libNames = "vulkan-1.dll";
+		else version(linux)
+			enum libNames = "libvulkan.so.1";
 		else
 			static assert(0,"Need to implement Vulkan libNames for this operating system.");
 	}
