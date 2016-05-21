@@ -27,13 +27,13 @@ except ImportError as e:
 	raise
 
 PKG_HEADER = """
-module PKGPREFIX;
-public import PKGPREFIX.types;
-public import PKGPREFIX.functions;
+module dvulkan;
+public import dvulkan.types;
+public import dvulkan.functions;
 """
 
 TYPES_HEADER = """
-module PKGPREFIX.types;
+module dvulkan.types;
 
 alias uint8_t = ubyte;
 alias uint16_t = ushort;
@@ -71,9 +71,9 @@ version(X86_64) {
 """
 
 DYNAMIC_HEADER = """
-module PKGPREFIX.functions;
+module dvulkan.functions;
 
-import PKGPREFIX.types;
+import dvulkan.types;
 import std.typetuple;
 import std.traits : Parameters;
 
@@ -127,10 +127,10 @@ class DGenerator(OutputGenerator):
 		self.dynamicFile = open(path.join(genOpts.filename, "functions.d"), "w", encoding="utf-8")
 		
 		with open(path.join(genOpts.filename, "package.d"), "w", encoding="utf-8") as pkgfile:
-			print(PKG_HEADER.replace("PKGPREFIX", genOpts.pkgprefix).replace("NAMEPREFIX", genOpts.nameprefix), file=pkgfile)
+			print(PKG_HEADER, file=pkgfile)
 		
-		print(TYPES_HEADER.replace("PKGPREFIX", genOpts.pkgprefix).replace("NAMEPREFIX", genOpts.nameprefix), file=self.typesFile)
-		print(DYNAMIC_HEADER.replace("PKGPREFIX", genOpts.pkgprefix).replace("NAMEPREFIX", genOpts.nameprefix), file=self.dynamicFile)
+		print(TYPES_HEADER, file=self.typesFile)
+		print(DYNAMIC_HEADER, file=self.dynamicFile)
 		self.funcNames = set()
 		self.enumConstants = set()
 	
@@ -153,7 +153,7 @@ alias AllVulkanFunctions = TypeTuple!(
 		print("""
 );
 
-struct NAMEPREFIXLoader {
+struct DVulkanLoader {
 	@disable this();
 	@disable this(this);
 	
@@ -165,7 +165,7 @@ struct NAMEPREFIXLoader {
 	}
 	
 	static void loadAllFunctions(VkInstance instance) {
-		assert(vkGetInstanceProcAddr !is null, "Must call NAMEPREFIXLoader.loadInstanceFunctions before NAMEPREFIXLoader.loadAllFunctions");
+		assert(vkGetInstanceProcAddr !is null, "Must call DVulkanLoader.loadInstanceFunctions before DVulkanLoader.loadAllFunctions");
 		
 		foreach(i, ref func; AllVulkanFunctions) {
 			static if(staticIndexOf!(AllVulkanFunctions[i].stringof,
@@ -191,7 +191,7 @@ struct NAMEPREFIXLoader {
 	}
 }
 
-version(NAMEPREFIXLoadFromDerelict) {
+version(DVulkanLoadFromDerelict) {
 	import derelict.util.loader;
 	import derelict.util.system;
 	
@@ -204,7 +204,7 @@ version(NAMEPREFIXLoadFromDerelict) {
 			static assert(0,"Need to implement Vulkan libNames for this operating system.");
 	}
 	
-	class NAMEPREFIXDerelictLoader : SharedLibLoader {
+	class DVulkanDerelictLoader : SharedLibLoader {
 		this() {
 			super(libNames);
 		}
@@ -212,20 +212,20 @@ version(NAMEPREFIXLoadFromDerelict) {
 		protected override void loadSymbols() {
 			typeof(vkGetInstanceProcAddr) getProcAddr;
 			bindFunc(cast(void**)&getProcAddr, "vkGetInstanceProcAddr");
-			NAMEPREFIXLoader.loadInstanceFunctions(getProcAddr);
+			DVulkanLoader.loadInstanceFunctions(getProcAddr);
 		}
 	}
 	
-	__gshared NAMEPREFIXDerelictLoader NAMEPREFIXDerelict;
+	__gshared DVulkanDerelictLoader DVulkanDerelict;
 
 	shared static this() {
-		NAMEPREFIXDerelict = new NAMEPREFIXDerelictLoader();
+		DVulkanDerelict = new DVulkanDerelictLoader();
 	}
 }
 
-""".replace("NAMEPREFIX", self.genOpts.nameprefix), file=self.dynamicFile)
+""", file=self.dynamicFile)
 		
-		print("version(NAMEPREFIXGlobalEnums) {".replace("NAMEPREFIX", self.genOpts.nameprefix), file=self.typesFile)
+		print("version(DVulkanGlobalEnums) {", file=self.typesFile)
 		for enumName, enumField in sorted(self.enumConstants):
 			print("\tenum %s = %s.%s;" % (enumField, enumName, enumField), file=self.typesFile)
 		print("}", file=self.typesFile)
@@ -344,8 +344,6 @@ version(NAMEPREFIXLoadFromDerelict) {
 
 class DGeneratorOptions(GeneratorOptions):
 	def __init__(self, *args, **kwargs):
-		self.pkgprefix = kwargs.pop("pkgprefix")
-		self.nameprefix = kwargs.pop("nameprefix")
 		super().__init__(*args, **kwargs)
 
 if __name__ == "__main__":
@@ -353,8 +351,6 @@ if __name__ == "__main__":
 	
 	parser = argparse.ArgumentParser()
 	parser.add_argument("outfolder")
-	parser.add_argument("--pkgprefix", default="dvulkan")
-	parser.add_argument("--nameprefix", default="DVulkan")
 	
 	args = parser.parse_args()
 	
@@ -367,8 +363,6 @@ if __name__ == "__main__":
 		apiname="vulkan",
 		versions=".*",
 		emitversions=".*",
-		pkgprefix=args.pkgprefix,
-		nameprefix=args.nameprefix,
 		#defaultExtensions="defaultExtensions",
 		addExtensions=r".*",
 		removeExtensions = r"VK_KHR_.*_surface$",
