@@ -9,7 +9,8 @@ import sys
 import re
 import os
 from os import path
-from itertools import islice
+from itertools import islice, chain
+from collections import OrderedDict
 
 re_funcptr = re.compile(r"^typedef (.+) \(VKAPI_PTR \*$")
 re_single_const = re.compile(r"^const\s+(.+)\*\s*$")
@@ -89,9 +90,22 @@ module dvulkan.functions;
 import dvulkan.types;
 import std.typetuple;
 import std.traits : Parameters;
-
-extern(System) @nogc nothrow {
 """
+
+class Extension:
+	def __init__(self, name):
+		self.name = name
+		self.functions = OrderedDict()
+		self.types = OrderedDict()
+		self.enumConstants = []
+	
+	@property
+	def version(self):
+		return "DVulkan_"+self.name
+	
+	@property
+	def funclist(self):
+		return "EXTN_FUNCS_"+self.name
 
 def getFullType(elem):
 	typ = elem.find("type")
@@ -129,42 +143,51 @@ class DGenerator(OutputGenerator):
 	def __init__(self, errFile=sys.stderr, warnFile=sys.stderr, diagFile=sys.stderr):
 		super().__init__(errFile, warnFile, diagFile)
 	
-	def beginFile(self, genOpts):
-		self.genOpts = genOpts
-		try:
-			os.mkdir(genOpts.filename)
-		except FileExistsError:
-			pass
-		
-		self.typesFile = open(path.join(genOpts.filename, "types.d"), "w", encoding="utf-8")
-		self.dynamicFile = open(path.join(genOpts.filename, "functions.d"), "w", encoding="utf-8")
-		
-		with open(path.join(genOpts.filename, "package.d"), "w", encoding="utf-8") as pkgfile:
-			print(PKG_HEADER, file=pkgfile)
-		
-		print(TYPES_HEADER, file=self.typesFile)
-		print(DYNAMIC_HEADER, file=self.dynamicFile)
-		self.funcNames = set()
-		self.enumConstants = set()
+	def emitDVulkanAllExtensions(self, file):
+		file.write("version(DVulkanAllExtensions) {\n")
+		for ext in self.extensions:
+			file.write("\tversion = DVulkan_{0};\n".format(ext.name))
+		file.write("}\n")
 	
-	def endFile(self):
-		print("}", file=self.dynamicFile)
+	######################################################################################################
+	
+	def emitFunctionsFile(self):
+		self.dynamicFile.write(DYNAMIC_HEADER)
 		
-		funcNames = sorted(self.funcNames)
+		# Define versions for DVulkanAllExtensions
+		self.emitDVulkanAllExtensions(self.dynamicFile)
 		
-		print("__gshared {", file=self.dynamicFile)
-		for name in funcNames:
-			print("\tPFN_%s %s;" % (name, name), file=self.dynamicFile)
-		print("""}
-
-alias AllVulkanFunctions = TypeTuple!(
-""", file=self.dynamicFile)
+		# Define function types
+		self.dynamicFile.write("extern(System) @nogc nothrow {\n")
+		for ext in self.extensions:
+			self.dynamicFile.write("\tversion("+ext.version+") {\n")
+			for name, cmd in ext.functions.items():
+				proto = cmd.elem.find("proto")
+				returnType = convertTypeConst(getFullType(proto).strip())
+				params = ",".join(convertTypeConst(getFullType(param).strip())+" "+param.find("name").text for param in cmd.elem.findall("param"))
+				print("\t\talias PFN_%s = %s function(%s);" % (name, returnType, params), file=self.dynamicFile)
+			self.dynamicFile.write("\t}\n")
+		self.dynamicFile.write("}\n")
 		
-		for name in funcNames:
-			print("\t"+name+",", file=self.dynamicFile)
+		# Define global function pointers
+		self.dynamicFile.write("__gshared {\n")
+		for ext in self.extensions:
+			self.dynamicFile.write("\tversion("+ext.version+") {\n")
+			for name in ext.functions:
+				self.dynamicFile.write("\t\tPFN_{0} {0};\n".format(name))
+			self.dynamicFile.write("\t\tprivate alias "+ext.funclist+" = TypeTuple!(\n")
+			for name in ext.functions:
+				self.dynamicFile.write("\t\t\t"+name+",\n")
+			self.dynamicFile.write("\t\t);\n");
+			self.dynamicFile.write("\t} else { private alias "+ext.funclist+" = TypeTuple!(); }\n")
 		
-		print("""
-);
+		self.dynamicFile.write("}\nprivate alias ALL_FUNCS = TypeTuple!(\n")
+		for ext in self.extensions:
+			self.dynamicFile.write("\t"+ext.funclist+",\n")
+		
+		self.dynamicFile.write(");\n")
+		
+		self.dynamicFile.write("""
 
 struct DVulkanLoader {
 	@disable this();
@@ -180,25 +203,25 @@ struct DVulkanLoader {
 	static void loadAllFunctions(VkInstance instance) {
 		assert(vkGetInstanceProcAddr !is null, "Must call DVulkanLoader.loadInstanceFunctions before DVulkanLoader.loadAllFunctions");
 		
-		foreach(i, ref func; AllVulkanFunctions) {
-			static if(staticIndexOf!(AllVulkanFunctions[i].stringof,
+		foreach(i, ref func; ALL_FUNCS) {
+			static if(staticIndexOf!(ALL_FUNCS[i].stringof,
 				"vkGetInstanceProcAddr",
 				"vkEnumerateInstanceExtensionProperties",
 				"vkEnumerateInstanceLayerProperties",
 				"vkCreateInstance",
 			) == -1) {
-				func = cast(typeof(func)) vkGetInstanceProcAddr(instance, AllVulkanFunctions[i].stringof);
+				func = cast(typeof(func)) vkGetInstanceProcAddr(instance, ALL_FUNCS[i].stringof);
 			}
 		}
 	}
 	static void loadAllFunctions(VkDevice device) {
 		assert(vkGetDeviceProcAddr !is null, "reload(VkDevice) must be called after reload(VkInstance)");
 		
-		foreach(i, ref func; AllVulkanFunctions) {
+		foreach(i, ref func; ALL_FUNCS) {
 			static if(Parameters!func.length > 0 && staticIndexOf!(Parameters!func[0],
 				VkDevice, VkQueue, VkCommandBuffer
 			) != -1) {
-				func = cast(typeof(func)) vkGetDeviceProcAddr(device, AllVulkanFunctions[i].stringof);
+				func = cast(typeof(func)) vkGetDeviceProcAddr(device, ALL_FUNCS[i].stringof);
 			}
 		}
 	}
@@ -230,130 +253,193 @@ version(DVulkanLoadFromDerelict) {
 	}
 	
 	__gshared DVulkanDerelictLoader DVulkanDerelict;
-
+	
 	shared static this() {
 		DVulkanDerelict = new DVulkanDerelictLoader();
 	}
 }
-
-""", file=self.dynamicFile)
+""")
+		self.dynamicFile.close()
+	
+	######################################################################################################
+	
+	def emitTypesFile(self):
+		self.typesFile.write(TYPES_HEADER)
 		
-		print("version(DVulkanGlobalEnums) {", file=self.typesFile)
-		for enumName, enumField in sorted(self.enumConstants):
-			print("\tenum %s = %s.%s;" % (enumField, enumName, enumField), file=self.typesFile)
-		print("}", file=self.typesFile)
+		self.emitDVulkanAllExtensions(self.typesFile)
+		
+		def emitType(ext, name, typeinfo):
+			if "requires" in typeinfo.elem.attrib:
+				required = typeinfo.elem.attrib["requires"]
+				if required.endswith(".h"):
+					return
+				elif required == "vk_platform":
+					return
+			typ = typeinfo.elem.attrib["category"]
+			if typ == "handle":
+				self.typesFile.write("\tmixin(%s!q{%s});\n" % (typeinfo.elem.find("type").text, name))
+			elif typ == "basetype":
+				self.typesFile.write("\talias %s = %s;\n" % (name, typeinfo.elem.find("type").text))
+			elif typ == "bitmask":
+				self.typesFile.write("\talias %s = VkFlags;\n" % name)
+			elif typ == "funcpointer":
+				returnType = re.match(re_funcptr, typeinfo.elem.text).group(1)
+				params = "".join(islice(typeinfo.elem.itertext(), 2, None))[2:]
+				if params == "void);":
+					params = ");"
+				self.typesFile.write("\talias %s = %s function(%s\n" % (name, returnType, params))
+				
+			elif typ == "struct" or typ == "union":
+				emitStruct(ext, name, typeinfo)
+			else:
+				pass
+		
+		def emitStruct(ext, name, typeinfo):
+			category = typeinfo.elem.attrib["category"]
+			self.typesFile.write("\t%s %s {\n" % (category, name))
+			for member in typeinfo.elem.findall("member"):
+				memberType = convertTypeConst(getFullType(member).strip())
+				memberName = member.find("name").text
+				if memberName == "module":
+					# don't use D identifiers
+					memberName = "_module"
+				
+				memberType, memberName = convertTypeArray(memberType, memberName)
+				if memberName == "sType" and memberType == "VkStructureType":
+					enumname = re.sub(re_camel_case, "\g<1>_\g<2>", name[2:]).upper()
+					self.typesFile.write("\t\tVkStructureType sType = VkStructureType.VK_STRUCTURE_TYPE_"+enumname+";\n")
+				else:
+					self.typesFile.write("\t\t%s %s;\n" % (memberType, memberName))
+			self.typesFile.write("\t}\n")
+		
+		def emitGroup(ext, name, groupinfo):
+			self.typesFile.write("\tenum %s {\n" % name)
+			
+			expand = "expand" in groupinfo.elem.attrib
+			
+			minName = None
+			maxName = None
+			minValue = float("+inf")
+			maxValue = float("-inf")
+			for elem in groupinfo.elem.findall("enum"):
+				(numval, strval) = self.enumToValue(elem, True)
+				fieldName = elem.get("name")
+				self.typesFile.write("\t\t%s = %s,\n" % (fieldName, strval))
+				ext.enumConstants.append((name, fieldName))
+				
+				if expand:
+					if numval < minValue:
+						minName = fieldName
+						minValue = numval
+					if numval > maxValue:
+						maxName = fieldName
+						maxValue = numval
+			
+			if name == "VkColorSpaceKHR":
+				self.typesFile.write("\t\tVK_COLORSPACE_SRGB_NONLINEAR_KHR = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,\n")
+				ext.enumConstants.append((name, "VK_COLORSPACE_SRGB_NONLINEAR_KHR"))
+			
+			if expand:
+				prefix = groupinfo.elem.attrib["expand"]
+				self.typesFile.write("\t\t%s_BEGIN_RANGE = %s,\n" % (prefix, minName))
+				self.typesFile.write("\t\t%s_END_RANGE = %s,\n" % (prefix, maxName))
+				self.typesFile.write("\t\t%s_RANGE_SIZE = (%s - %s + 1),\n" % (prefix, maxName, minName))
+				self.typesFile.write("\t\t%s_MAX_ENUM = 0x7FFFFFFF,\n" % prefix)
+				ext.enumConstants.append((name, prefix+"_BEGIN_RANGE"))
+				ext.enumConstants.append((name, prefix+"_END_RANGE"))
+				ext.enumConstants.append((name, prefix+"_RANGE_SIZE"))
+				ext.enumConstants.append((name, prefix+"_MAX_ENUM"))
+			self.typesFile.write("\t}\n")
+		
+		def emitEnum(ext, name, enuminfo):
+			_,strVal = self.enumToValue(enuminfo.elem, False)
+			if strVal == "VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT":
+				strVal = "VkStructureType."+strVal
+			elif strVal == "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR":
+				return
+			strVal = re.sub(re_long_int, "\g<1>UL", strVal)
+			self.typesFile.write("\tenum %s = %s;\n" % (name, strVal))
+		
+		for ext in self.extensions:
+			self.typesFile.write("version("+ext.version+") {\n")
+			for name, info in ext.types.items():
+				typ, info = info
+				if typ == "type":
+					emitType(ext, name, info)
+				elif typ == "struct":
+					emitStruct(ext, name, info)
+				elif typ == "group":
+					emitGroup(ext, name, info)
+				elif typ == "enum":
+					emitEnum(ext, name, info)
+				else:
+					raise RuntimeError()
+			self.typesFile.write("}\n")
+		
+		self.typesFile.write("version(DVulkanGlobalEnums) {\n")
+		for ext in self.extensions:
+			self.typesFile.write("\tversion("+ext.version+") {\n")
+			for enumName, enumField in ext.enumConstants:
+				self.typesFile.write("\t\tenum {0} = {1}.{0};\n".format(enumField, enumName, enumField))
+			self.typesFile.write("\t}\n")
+		self.typesFile.write("}\n")
+		
+		self.typesFile.close()
+	
+	######################################################################################################
+	
+	def beginFile(self, genOpts):
+		self.genOpts = genOpts
+		try:
+			os.mkdir(genOpts.filename)
+		except FileExistsError:
+			pass
+		
+		self.typesFile = open(path.join(genOpts.filename, "types.d"), "w", encoding="utf-8")
+		self.dynamicFile = open(path.join(genOpts.filename, "functions.d"), "w", encoding="utf-8")
+		
+		with open(path.join(genOpts.filename, "package.d"), "w", encoding="utf-8") as pkgfile:
+			print(PKG_HEADER, file=pkgfile)
+		
+		self.currentExtension = None
+		self.extensions = []
+	
+	def endFile(self):
+		self.emitFunctionsFile()
+		self.emitTypesFile()
 		
 		self.typesFile.close()
 		self.dynamicFile.close()
 	
 	def beginFeature(self, interface, emit):
 		super().beginFeature(interface, emit)
+		self.currentExtension = Extension(interface.attrib["name"])
+		self.extensions.append(self.currentExtension)
+	
 	def endFeature(self):
 		super().endFeature()
+		self.currentExtension = None
 	
 	def genType(self, typeinfo, name):
 		super().genType(typeinfo, name)
-		if "requires" in typeinfo.elem.attrib:
-			required = typeinfo.elem.attrib["requires"]
-			if required.endswith(".h"):
-				return
-			elif required == "vk_platform":
-				return
-		typ = typeinfo.elem.attrib["category"]
-		if typ == "handle":
-			print("mixin(%s!q{%s});" % (typeinfo.elem.find("type").text, name), file=self.typesFile)
-		elif typ == "basetype":
-			print("alias %s = %s;" % (name, typeinfo.elem.find("type").text), file=self.typesFile)
-		elif typ == "bitmask":
-			print("alias %s = VkFlags;" % name, file=self.typesFile)
-		elif typ == "funcpointer":
-			returnType = re.match(re_funcptr, typeinfo.elem.text).group(1)
-			params = "".join(islice(typeinfo.elem.itertext(), 2, None))[2:]
-			if params == "void);":
-				params = ");"
-			print("alias %s = %s function(%s" % (name, returnType, params), file=self.typesFile)
-		elif typ == "struct" or typ == "union":
-			self.genStruct(typeinfo, name)
-		else:
-			pass
-		
+		self.currentExtension.types[name] = ("type", typeinfo)
+	
 	def genStruct(self, typeinfo, name):
+		print("ASDF ", name)
 		super().genStruct(typeinfo, name)
-		category = typeinfo.elem.attrib["category"]
-		print("%s %s {" % (category, name), file=self.typesFile)
-		for member in typeinfo.elem.findall("member"):
-			memberType = convertTypeConst(getFullType(member).strip())
-			memberName = member.find("name").text
-			if memberName == "module":
-				# don't use D identifiers
-				memberName = "_module"
-			
-			memberType, memberName = convertTypeArray(memberType, memberName)
-			if memberName == "sType" and memberType == "VkStructureType":
-				enumname = re.sub(re_camel_case, "\g<1>_\g<2>", name[2:]).upper()
-				print("\tVkStructureType sType = VkStructureType.VK_STRUCTURE_TYPE_"+enumname+";", file=self.typesFile)
-			else:
-				print("\t%s %s;" % (memberType, memberName), file=self.typesFile)
-		print("}", file=self.typesFile)
+		self.currentExtension.types[name] = ("struct", typeinfo)
 	
 	def genGroup(self, groupinfo, name):
 		super().genGroup(groupinfo, name)
-		print("enum %s {" % name, file=self.typesFile)
-		
-		expand = "expand" in groupinfo.elem.attrib
-		
-		minName = None
-		maxName = None
-		minValue = float("+inf")
-		maxValue = float("-inf")
-		for elem in groupinfo.elem.findall("enum"):
-			(numval, strval) = self.enumToValue(elem, True)
-			fieldName = elem.get("name")
-			print("\t%s = %s," % (fieldName, strval), file=self.typesFile)
-			self.enumConstants.add((name, fieldName))
-			
-			if expand:
-				if numval < minValue:
-					minName = fieldName
-					minValue = numval
-				if numval > maxValue:
-					maxName = fieldName
-					maxValue = numval
-		
-		if name == "VkColorSpaceKHR":
-			print("\tVK_COLORSPACE_SRGB_NONLINEAR_KHR = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR,", file=self.typesFile)
-			self.enumConstants.add((name, "VK_COLORSPACE_SRGB_NONLINEAR_KHR"))
-		
-		if expand:
-			prefix = groupinfo.elem.attrib["expand"]
-			print("\t%s_BEGIN_RANGE = %s," % (prefix, minName), file=self.typesFile)
-			print("\t%s_END_RANGE = %s," % (prefix, maxName), file=self.typesFile)
-			print("\t%s_RANGE_SIZE = (%s - %s + 1)," % (prefix, maxName, minName), file=self.typesFile)
-			print("\t%s_MAX_ENUM = 0x7FFFFFFF," % prefix, file=self.typesFile)
-			self.enumConstants.add((name, prefix+"_BEGIN_RANGE"))
-			self.enumConstants.add((name, prefix+"_END_RANGE"))
-			self.enumConstants.add((name, prefix+"_RANGE_SIZE"))
-			self.enumConstants.add((name, prefix+"_MAX_ENUM"))
-		print("}", file=self.typesFile)
+		self.currentExtension.types[name] = ("group", groupinfo)
 	
 	def genEnum(self, enuminfo, name):
 		super().genEnum(enuminfo, name)
-		_,strVal = self.enumToValue(enuminfo.elem, False)
-		if strVal == "VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT":
-			strVal = "VkStructureType."+strVal
-		elif strVal == "VK_COLOR_SPACE_SRGB_NONLINEAR_KHR":
-			return
-		strVal = re.sub(re_long_int, "\g<1>UL", strVal)
-		print("enum %s = %s;" % (name, strVal), file=self.typesFile)
-		
+		self.currentExtension.types[name] = ("enum", enuminfo)
+
 	def genCmd(self, cmd, name):
 		super().genCmd(cmd, name)
-		
-		proto = cmd.elem.find("proto")
-		returnType = convertTypeConst(getFullType(proto).strip())
-		params = ",".join(convertTypeConst(getFullType(param).strip())+" "+param.find("name").text for param in cmd.elem.findall("param"))
-		print("\talias PFN_%s = %s function(%s);" % (name, returnType, params), file=self.dynamicFile)
-		self.funcNames.add(name)
+		self.currentExtension.functions[name] = cmd
 
 class DGeneratorOptions(GeneratorOptions):
 	def __init__(self, *args, **kwargs):

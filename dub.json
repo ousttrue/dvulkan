@@ -8,18 +8,25 @@
 	"configurations": [
 		{
 			"name": "default",
+			"versions": ["DVulkanAllExtensions"]
+		},
+		{
+			"name": "custom-extensions"
 		},
 		{
 			"name": "with-derelict-loader",
-			"versions": ["DVulkanLoadFromDerelict"],
+			"versions": ["DVulkanLoadFromDerelict", "DVulkanAllExtensions"],
 			"dependencies": {
 				"derelict-util": "~>2.0.4"
 			},
 		},
 		{
-			"name": "with-global-enums",
-			"versions": ["DVulkanGlobalEnums"]
-		}
+			"name": "with-derelict-loader-custom-extensions",
+			"versions": ["DVulkanLoadFromDerelict"],
+			"dependencies": {
+				"derelict-util": "~>2.0.4"
+			},
+		},
 	],
 	"subPackages": [
 		{
@@ -42,9 +49,9 @@
 			"dependencies": {
 				"d-vulkan": { "path": "." }
 			},
-			"versions": ["DVulkanGlobalEnums"],
+			"versions": ["DVulkanGlobalEnums", "DVulkan_VK_VERSION_1_0"],
 			"subConfigurations": {
-				"d-vulkan": "with-derelict-loader"
+				"d-vulkan": "with-derelict-loader-custom-extensions"
 			}
 		}
 	]
