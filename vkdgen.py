@@ -59,14 +59,27 @@ alias int64_t = long;
 	}
 }
 
-enum VK_NULL_HANDLE = 0;
+/+
+ + On 32-bit systems, VK_NULL_HANDLE must be compatible with both opaque struct pointers
+ + (for dispatchable object) and integers (for nondispatchable objects). This is not possible
+ + with D's type system, which doesn't implicitly convert 0 to the null pointer as in C
+ + (for better or for worse). Either use the `VK_NULL_[NON_]DISPATCHABLE_HANDLE` constants or
+ + `Vk(Type).init`.
+ +
+ + See also https://github.com/ColonelThirtyTwo/dvulkan/issues/13
+ +/
+deprecated("VK_NULL_HANDLE is impossible to implement portably in D. Use Vk(Type).init or VK_NULL_[NON_]DISPATCHABLE_HANDLE")
+enum VK_NULL_HANDLE = null;
 
 enum VK_DEFINE_HANDLE(string name) = "struct "~name~"_handle; alias "~name~" = "~name~"_handle*;";
 
+enum VK_NULL_DISPATCHABLE_HANDLE = null;
 version(X86_64) {
 	alias VK_DEFINE_NON_DISPATCHABLE_HANDLE(string name) = VK_DEFINE_HANDLE!name;
+	enum VK_NULL_NON_DISPATCHABLE_HANDLE = null;
 } else {
 	enum VK_DEFINE_NON_DISPATCHABLE_HANDLE(string name) = "alias "~name~" = ulong;";
+	enum VK_NULL_NON_DISPATCHABLE_HANDLE = 0;
 }
 """
 
