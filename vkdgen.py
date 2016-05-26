@@ -425,7 +425,6 @@ version(DVulkanLoadFromDerelict) {
 		self.currentExtension.types[name] = ("type", typeinfo)
 	
 	def genStruct(self, typeinfo, name):
-		print("ASDF ", name)
 		super().genStruct(typeinfo, name)
 		self.currentExtension.types[name] = ("struct", typeinfo)
 	
