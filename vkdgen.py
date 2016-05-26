@@ -19,11 +19,23 @@ re_array = re.compile(r"^([^\[]+)\[(\d+)\]$")
 re_camel_case = re.compile(r"([a-z])([A-Z])")
 re_long_int = re.compile(r"([0-9]+)ULL")
 
+if __name__ == "__main__":
+	# need to parse arguments first so that we can update the path in the imports used below
+	import argparse
+	
+	parser = argparse.ArgumentParser()
+	parser.add_argument("specfolder", nargs="?", help="Location of Vulkan-Docs/src/spec/", default=".")
+	parser.add_argument("outfolder")
+	
+	args = parser.parse_args()
+	
+	sys.path.append(args.specfolder)
+
 try:
 	from reg import *
 	from generator import OutputGenerator, GeneratorOptions, write
 except ImportError as e:
-	print("Could not import Vulkan generator; ensure that this file is in Vulkan-Docs/src/spec", file=sys.stderr)
+	print("Could not import Vulkan generator; ensure that specfolder argument is correctly", file=sys.stderr)
 	print("-----", file=sys.stderr)
 	raise
 
@@ -445,16 +457,10 @@ class DGeneratorOptions(GeneratorOptions):
 		super().__init__(*args, **kwargs)
 
 if __name__ == "__main__":
-	import argparse
-	
-	parser = argparse.ArgumentParser()
-	parser.add_argument("outfolder")
-	
-	args = parser.parse_args()
-	
+	from os.path import join
 	gen = DGenerator()
 	reg = Registry()
-	reg.loadElementTree(etree.parse("vk.xml"))
+	reg.loadElementTree(etree.parse(join(args.specfolder, "vk.xml")))
 	reg.setGenerator(gen)
 	reg.apiGen(DGeneratorOptions(
 		filename=args.outfolder,
@@ -465,4 +471,3 @@ if __name__ == "__main__":
 		addExtensions=r".*",
 		removeExtensions = r"VK_KHR_.*_surface$",
 	))
-	
