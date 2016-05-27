@@ -8,25 +8,26 @@
 	"configurations": [
 		{
 			"name": "default",
-			"versions": ["DVulkanAllExtensions"]
-		},
-		{
-			"name": "custom-extensions"
-		},
-		{
-			"name": "with-derelict-loader",
-			"versions": ["DVulkanLoadFromDerelict", "DVulkanAllExtensions"],
+			"versions": [
+				"DVulkanDerelict",
+				"DVulkanAllExtensions",
+				"DVulkanGlobalEnums",
+				"DVulkanGlobalFunctions"
+			],
 			"dependencies": {
 				"derelict-util": "~>2.0.4"
-			},
+			}
 		},
 		{
-			"name": "with-derelict-loader-custom-extensions",
-			"versions": ["DVulkanLoadFromDerelict"],
+			"name": "bare",
 			"dependencies": {
-				"derelict-util": "~>2.0.4"
-			},
-		},
+				"derelict-util": {
+					"version": "~>2.0.4",
+					"optional": true,
+					"default": false
+				}
+			}
+		}
 	],
 	"subPackages": [
 		{
@@ -37,9 +38,6 @@
 			"dependencies": {
 				"d-vulkan": { "path": "." }
 			},
-			"subConfigurations": {
-				"d-vulkan": "with-derelict-loader"
-			}
 		},
 		{
 			"name": "layers",
@@ -47,12 +45,18 @@
 			"targetType": "executable",
 			"sourceFiles": ["examples/layers.d"],
 			"dependencies": {
+				"derelict-util": "~>2.0.4",
 				"d-vulkan": { "path": "." }
 			},
-			"versions": ["DVulkanGlobalEnums", "DVulkan_VK_VERSION_1_0"],
 			"subConfigurations": {
-				"d-vulkan": "with-derelict-loader-custom-extensions"
-			}
+				"d-vulkan": "bare"
+			},
+			"versions": [
+				"DVulkanGlobalFunctions",
+				"DVulkanGlobalEnums",
+				"DVulkanDerelict",
+				"DVulkan_VK_VERSION_1_0"
+			]
 		}
 	]
 }
