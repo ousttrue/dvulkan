@@ -494,5 +494,6 @@ if __name__ == "__main__":
 		emitversions=".*",
 		#defaultExtensions="defaultExtensions",
 		addExtensions=r".*",
-		removeExtensions = r"VK_KHR_.*_surface$",
+		# In order to prevent the platform-specific type is introduced 
+		removeExtensions = r"VK_(KHR_.*_surface|AMD_.*|NV_.*|NVX_.*|GOOGLE_.*|.*_extension_\d+)$",
 	))
