@@ -326,7 +326,7 @@ version(X86_64) {
 				params = "".join(islice(typeinfo.elem.itertext(), 2, None))[2:]
 				if params == "void);":
 					params = ");"
-				self.typesFile.write("\talias %s = %s function(%s\n" % (name, returnType, params))
+				self.typesFile.write("\talias %s = extern(C) %s function(%s\n" % (name, returnType, params))
 				
 			elif typ == "struct" or typ == "union":
 				emitStruct(ext, name, typeinfo)
