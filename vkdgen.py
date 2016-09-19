@@ -16,7 +16,7 @@ re_funcptr = re.compile(r"^typedef (.+) \(VKAPI_PTR \*$")
 re_single_const = re.compile(r"^const\s+(.+)\*\s*$")
 re_double_const = re.compile(r"^const\s+(.+)\*\s+const\*\s*$")
 re_array = re.compile(r"^([^\[]+)\[(\d+)\]$")
-re_camel_case = re.compile(r"([a-z])([A-Z])")
+re_camel_case = re.compile(r"([a-z0-9])([A-Z])")
 re_long_int = re.compile(r"([0-9]+)ULL")
 
 if __name__ == "__main__":
