@@ -58,16 +58,10 @@ version(DVulkanAllExtensions) {
 	version = DVulkan_VK_KHR_sampler_mirror_clamp_to_edge;
 	version = DVulkan_VK_ANDROID_native_buffer;
 	version = DVulkan_VK_EXT_debug_report;
-	version = DVulkan_VK_NV_glsl_shader;
-	version = DVulkan_VK_NV_extension_1;
 	version = DVulkan_VK_IMG_filter_cubic;
-	version = DVulkan_VK_AMD_extension_1;
-	version = DVulkan_VK_AMD_extension_2;
-	version = DVulkan_VK_AMD_rasterization_order;
-	version = DVulkan_VK_AMD_extension_4;
-	version = DVulkan_VK_AMD_extension_5;
-	version = DVulkan_VK_AMD_extension_6;
 	version = DVulkan_VK_EXT_debug_marker;
+	version = DVulkan_VK_IMG_format_pvrtc;
+	version = DVulkan_VK_EXT_validation_flags;
 }
 version(DVulkan_VK_VERSION_1_0) {
 	enum VkPipelineCacheHeaderVersion {
@@ -100,6 +94,7 @@ version(DVulkan_VK_VERSION_1_0) {
 		VK_ERROR_INCOMPATIBLE_DRIVER = -9,
 		VK_ERROR_TOO_MANY_OBJECTS = -10,
 		VK_ERROR_FORMAT_NOT_SUPPORTED = -11,
+		VK_ERROR_FRAGMENTED_POOL = -12,
 		VK_ERROR_SURFACE_LOST_KHR = -1000000000,
 		VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = -1000000001,
 		VK_SUBOPTIMAL_KHR = 1000001003,
@@ -175,6 +170,15 @@ version(DVulkan_VK_VERSION_1_0) {
 		VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT = 1000022000,
 		VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT = 1000022001,
 		VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT = 1000022002,
+		VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV = 1000026000,
+		VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV = 1000026001,
+		VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV = 1000026002,
+		VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV = 1000056000,
+		VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_NV = 1000056001,
+		VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV = 1000057000,
+		VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_NV = 1000057001,
+		VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_NV = 1000058000,
+		VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT = 1000061000,
 	}
 	alias VkFlags = uint32_t;
 	alias VkInstanceCreateFlags = VkFlags;
@@ -204,29 +208,29 @@ version(DVulkan_VK_VERSION_1_0) {
 		VK_SYSTEM_ALLOCATION_SCOPE_DEVICE = 3,
 		VK_SYSTEM_ALLOCATION_SCOPE_INSTANCE = 4,
 	}
-	alias PFN_vkAllocationFunction = void* function(
+	alias PFN_vkAllocationFunction = extern(C) void* function(
     void*                                       pUserData,
     size_t                                      size,
     size_t                                      alignment,
     VkSystemAllocationScope                     allocationScope);
-	alias PFN_vkReallocationFunction = void* function(
+	alias PFN_vkReallocationFunction = extern(C) void* function(
     void*                                       pUserData,
     void*                                       pOriginal,
     size_t                                      size,
     size_t                                      alignment,
     VkSystemAllocationScope                     allocationScope);
-	alias PFN_vkFreeFunction = void function(
+	alias PFN_vkFreeFunction = extern(C) void function(
     void*                                       pUserData,
     void*                                       pMemory);
 	enum VkInternalAllocationType {
 		VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE = 0,
 	}
-	alias PFN_vkInternalAllocationNotification = void function(
+	alias PFN_vkInternalAllocationNotification = extern(C) void function(
     void*                                       pUserData,
     size_t                                      size,
     VkInternalAllocationType                    allocationType,
     VkSystemAllocationScope                     allocationScope);
-	alias PFN_vkInternalFreeNotification = void function(
+	alias PFN_vkInternalFreeNotification = extern(C) void function(
     void*                                       pUserData,
     size_t                                      size,
     VkInternalAllocationType                    allocationType,
@@ -485,6 +489,14 @@ version(DVulkan_VK_VERSION_1_0) {
 		VK_FORMAT_ASTC_12x10_SRGB_BLOCK = 182,
 		VK_FORMAT_ASTC_12x12_UNORM_BLOCK = 183,
 		VK_FORMAT_ASTC_12x12_SRGB_BLOCK = 184,
+		VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG = 1000054000,
+		VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG = 1000054001,
+		VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG = 1000054002,
+		VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG = 1000054003,
+		VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG = 1000054004,
+		VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG = 1000054005,
+		VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG = 1000054006,
+		VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG = 1000054007,
 	}
 	enum VkFormatFeatureFlagBits {
 		VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT = 0x00000001,
@@ -735,7 +747,7 @@ version(DVulkan_VK_VERSION_1_0) {
 		uint32_t memoryHeapCount;
 		VkMemoryHeap[VK_MAX_MEMORY_HEAPS] memoryHeaps;
 	}
-	alias PFN_vkVoidFunction = void function();
+	alias PFN_vkVoidFunction = extern(C) void function();
 	mixin(VK_DEFINE_HANDLE!q{VkDevice});
 	alias VkDeviceCreateFlags = VkFlags;
 	alias VkDeviceQueueCreateFlags = VkFlags;
@@ -2094,7 +2106,7 @@ version(DVulkan_VK_EXT_debug_report) {
 		VK_DEBUG_REPORT_ERROR_NONE_EXT = 0,
 		VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT = 1,
 	}
-	enum VK_EXT_DEBUG_REPORT_SPEC_VERSION = 2;
+	enum VK_EXT_DEBUG_REPORT_SPEC_VERSION = 3;
 	enum VK_EXT_DEBUG_REPORT_EXTENSION_NAME = "VK_EXT_debug_report";
 	enum VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT = VkStructureType.VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 	enum VkDebugReportFlagBitsEXT {
@@ -2105,7 +2117,7 @@ version(DVulkan_VK_EXT_debug_report) {
 		VK_DEBUG_REPORT_DEBUG_BIT_EXT = 0x00000010,
 	}
 	alias VkDebugReportFlagsEXT = VkFlags;
-	alias PFN_vkDebugReportCallbackEXT = VkBool32 function(
+	alias PFN_vkDebugReportCallbackEXT = extern(C) VkBool32 function(
     VkDebugReportFlagsEXT                       flags,
     VkDebugReportObjectTypeEXT                  objectType,
     uint64_t                                    object,
@@ -2123,50 +2135,9 @@ version(DVulkan_VK_EXT_debug_report) {
 	}
 	mixin(VK_DEFINE_NON_DISPATCHABLE_HANDLE!q{VkDebugReportCallbackEXT});
 }
-version(DVulkan_VK_NV_glsl_shader) {
-	enum VK_NV_GLSL_SHADER_SPEC_VERSION = 1;
-	enum VK_NV_GLSL_SHADER_EXTENSION_NAME = "VK_NV_glsl_shader";
-}
-version(DVulkan_VK_NV_extension_1) {
-	enum VK_NV_EXTENSION_1_SPEC_VERSION = 0;
-	enum VK_NV_EXTENSION_1_EXTENSION_NAME = "VK_NV_extension_1";
-}
 version(DVulkan_VK_IMG_filter_cubic) {
 	enum VK_IMG_FILTER_CUBIC_SPEC_VERSION = 1;
 	enum VK_IMG_FILTER_CUBIC_EXTENSION_NAME = "VK_IMG_filter_cubic";
-}
-version(DVulkan_VK_AMD_extension_1) {
-	enum VK_AMD_EXTENSION_1_SPEC_VERSION = 0;
-	enum VK_AMD_EXTENSION_1_EXTENSION_NAME = "VK_AMD_extension_1";
-}
-version(DVulkan_VK_AMD_extension_2) {
-	enum VK_AMD_EXTENSION_2_SPEC_VERSION = 0;
-	enum VK_AMD_EXTENSION_2_EXTENSION_NAME = "VK_AMD_extension_2";
-}
-version(DVulkan_VK_AMD_rasterization_order) {
-	enum VkRasterizationOrderAMD {
-		VK_RASTERIZATION_ORDER_STRICT_AMD = 0,
-		VK_RASTERIZATION_ORDER_RELAXED_AMD = 1,
-	}
-	struct VkPipelineRasterizationStateRasterizationOrderAMD {
-		VkStructureType sType = VkStructureType.VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_RASTERIZATION_ORDER_AMD;
-		const(void)* pNext;
-		VkRasterizationOrderAMD rasterizationOrder;
-	}
-	enum VK_AMD_RASTERIZATION_ORDER_SPEC_VERSION = 1;
-	enum VK_AMD_RASTERIZATION_ORDER_EXTENSION_NAME = "VK_AMD_rasterization_order";
-}
-version(DVulkan_VK_AMD_extension_4) {
-	enum VK_AMD_EXTENSION_4_SPEC_VERSION = 0;
-	enum VK_AMD_EXTENSION_4_EXTENSION_NAME = "VK_AMD_extension_4";
-}
-version(DVulkan_VK_AMD_extension_5) {
-	enum VK_AMD_EXTENSION_5_SPEC_VERSION = 0;
-	enum VK_AMD_EXTENSION_5_EXTENSION_NAME = "VK_AMD_extension_5";
-}
-version(DVulkan_VK_AMD_extension_6) {
-	enum VK_AMD_EXTENSION_6_SPEC_VERSION = 0;
-	enum VK_AMD_EXTENSION_6_EXTENSION_NAME = "VK_AMD_extension_6";
 }
 version(DVulkan_VK_EXT_debug_marker) {
 	struct VkDebugMarkerObjectNameInfoEXT {
@@ -2194,6 +2165,23 @@ version(DVulkan_VK_EXT_debug_marker) {
 	enum VK_EXT_DEBUG_MARKER_SPEC_VERSION = 3;
 	enum VK_EXT_DEBUG_MARKER_EXTENSION_NAME = "VK_EXT_debug_marker";
 }
+version(DVulkan_VK_IMG_format_pvrtc) {
+	enum VK_IMG_FORMAT_PVRTC_SPEC_VERSION = 1;
+	enum VK_IMG_FORMAT_PVRTC_EXTENSION_NAME = "VK_IMG_format_pvrtc";
+}
+version(DVulkan_VK_EXT_validation_flags) {
+	enum VkValidationCheckEXT {
+		VK_VALIDATION_CHECK_ALL_EXT = 0,
+	}
+	struct VkValidationFlagsEXT {
+		VkStructureType sType = VkStructureType.VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT;
+		const(void)* pNext;
+		uint32_t disabledValidationCheckCount;
+		VkValidationCheckEXT* pDisabledValidationChecks;
+	}
+	enum VK_EXT_VALIDATION_FLAGS_SPEC_VERSION = 1;
+	enum VK_EXT_VALIDATION_FLAGS_EXTENSION_NAME = "VK_EXT_validation_flags";
+}
 version(DVulkanGlobalEnums) {
 	version(DVulkan_VK_VERSION_1_0) {
 		enum VK_PIPELINE_CACHE_HEADER_VERSION_ONE = VkPipelineCacheHeaderVersion.VK_PIPELINE_CACHE_HEADER_VERSION_ONE;
@@ -2214,6 +2202,7 @@ version(DVulkanGlobalEnums) {
 		enum VK_ERROR_INCOMPATIBLE_DRIVER = VkResult.VK_ERROR_INCOMPATIBLE_DRIVER;
 		enum VK_ERROR_TOO_MANY_OBJECTS = VkResult.VK_ERROR_TOO_MANY_OBJECTS;
 		enum VK_ERROR_FORMAT_NOT_SUPPORTED = VkResult.VK_ERROR_FORMAT_NOT_SUPPORTED;
+		enum VK_ERROR_FRAGMENTED_POOL = VkResult.VK_ERROR_FRAGMENTED_POOL;
 		enum VK_ERROR_SURFACE_LOST_KHR = VkResult.VK_ERROR_SURFACE_LOST_KHR;
 		enum VK_ERROR_NATIVE_WINDOW_IN_USE_KHR = VkResult.VK_ERROR_NATIVE_WINDOW_IN_USE_KHR;
 		enum VK_SUBOPTIMAL_KHR = VkResult.VK_SUBOPTIMAL_KHR;
@@ -2287,6 +2276,15 @@ version(DVulkanGlobalEnums) {
 		enum VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT = VkStructureType.VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_NAME_INFO_EXT;
 		enum VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT = VkStructureType.VK_STRUCTURE_TYPE_DEBUG_MARKER_OBJECT_TAG_INFO_EXT;
 		enum VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT = VkStructureType.VK_STRUCTURE_TYPE_DEBUG_MARKER_MARKER_INFO_EXT;
+		enum VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV = VkStructureType.VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV;
+		enum VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV = VkStructureType.VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_BUFFER_CREATE_INFO_NV;
+		enum VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV = VkStructureType.VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV;
+		enum VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV = VkStructureType.VK_STRUCTURE_TYPE_EXTERNAL_MEMORY_IMAGE_CREATE_INFO_NV;
+		enum VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_NV = VkStructureType.VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO_NV;
+		enum VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV = VkStructureType.VK_STRUCTURE_TYPE_IMPORT_MEMORY_WIN32_HANDLE_INFO_NV;
+		enum VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_NV = VkStructureType.VK_STRUCTURE_TYPE_EXPORT_MEMORY_WIN32_HANDLE_INFO_NV;
+		enum VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_NV = VkStructureType.VK_STRUCTURE_TYPE_WIN32_KEYED_MUTEX_ACQUIRE_RELEASE_INFO_NV;
+		enum VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT = VkStructureType.VK_STRUCTURE_TYPE_VALIDATION_FLAGS_EXT;
 		enum VK_SYSTEM_ALLOCATION_SCOPE_COMMAND = VkSystemAllocationScope.VK_SYSTEM_ALLOCATION_SCOPE_COMMAND;
 		enum VK_SYSTEM_ALLOCATION_SCOPE_OBJECT = VkSystemAllocationScope.VK_SYSTEM_ALLOCATION_SCOPE_OBJECT;
 		enum VK_SYSTEM_ALLOCATION_SCOPE_CACHE = VkSystemAllocationScope.VK_SYSTEM_ALLOCATION_SCOPE_CACHE;
@@ -2478,6 +2476,14 @@ version(DVulkanGlobalEnums) {
 		enum VK_FORMAT_ASTC_12x10_SRGB_BLOCK = VkFormat.VK_FORMAT_ASTC_12x10_SRGB_BLOCK;
 		enum VK_FORMAT_ASTC_12x12_UNORM_BLOCK = VkFormat.VK_FORMAT_ASTC_12x12_UNORM_BLOCK;
 		enum VK_FORMAT_ASTC_12x12_SRGB_BLOCK = VkFormat.VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
+		enum VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG = VkFormat.VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG;
+		enum VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG = VkFormat.VK_FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG;
+		enum VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG = VkFormat.VK_FORMAT_PVRTC2_2BPP_UNORM_BLOCK_IMG;
+		enum VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG = VkFormat.VK_FORMAT_PVRTC2_4BPP_UNORM_BLOCK_IMG;
+		enum VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG = VkFormat.VK_FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG;
+		enum VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG = VkFormat.VK_FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG;
+		enum VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG = VkFormat.VK_FORMAT_PVRTC2_2BPP_SRGB_BLOCK_IMG;
+		enum VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG = VkFormat.VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG;
 		enum VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT = VkFormatFeatureFlagBits.VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
 		enum VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT = VkFormatFeatureFlagBits.VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT;
 		enum VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT = VkFormatFeatureFlagBits.VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT;
@@ -2861,26 +2867,13 @@ version(DVulkanGlobalEnums) {
 		enum VK_DEBUG_REPORT_ERROR_BIT_EXT = VkDebugReportFlagBitsEXT.VK_DEBUG_REPORT_ERROR_BIT_EXT;
 		enum VK_DEBUG_REPORT_DEBUG_BIT_EXT = VkDebugReportFlagBitsEXT.VK_DEBUG_REPORT_DEBUG_BIT_EXT;
 	}
-	version(DVulkan_VK_NV_glsl_shader) {
-	}
-	version(DVulkan_VK_NV_extension_1) {
-	}
 	version(DVulkan_VK_IMG_filter_cubic) {
 	}
-	version(DVulkan_VK_AMD_extension_1) {
-	}
-	version(DVulkan_VK_AMD_extension_2) {
-	}
-	version(DVulkan_VK_AMD_rasterization_order) {
-		enum VK_RASTERIZATION_ORDER_STRICT_AMD = VkRasterizationOrderAMD.VK_RASTERIZATION_ORDER_STRICT_AMD;
-		enum VK_RASTERIZATION_ORDER_RELAXED_AMD = VkRasterizationOrderAMD.VK_RASTERIZATION_ORDER_RELAXED_AMD;
-	}
-	version(DVulkan_VK_AMD_extension_4) {
-	}
-	version(DVulkan_VK_AMD_extension_5) {
-	}
-	version(DVulkan_VK_AMD_extension_6) {
-	}
 	version(DVulkan_VK_EXT_debug_marker) {
+	}
+	version(DVulkan_VK_IMG_format_pvrtc) {
+	}
+	version(DVulkan_VK_EXT_validation_flags) {
+		enum VK_VALIDATION_CHECK_ALL_EXT = VkValidationCheckEXT.VK_VALIDATION_CHECK_ALL_EXT;
 	}
 }

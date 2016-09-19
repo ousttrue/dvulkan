@@ -16,16 +16,10 @@ version(DVulkanAllExtensions) {
 	version = DVulkan_VK_KHR_sampler_mirror_clamp_to_edge;
 	version = DVulkan_VK_ANDROID_native_buffer;
 	version = DVulkan_VK_EXT_debug_report;
-	version = DVulkan_VK_NV_glsl_shader;
-	version = DVulkan_VK_NV_extension_1;
 	version = DVulkan_VK_IMG_filter_cubic;
-	version = DVulkan_VK_AMD_extension_1;
-	version = DVulkan_VK_AMD_extension_2;
-	version = DVulkan_VK_AMD_rasterization_order;
-	version = DVulkan_VK_AMD_extension_4;
-	version = DVulkan_VK_AMD_extension_5;
-	version = DVulkan_VK_AMD_extension_6;
 	version = DVulkan_VK_EXT_debug_marker;
+	version = DVulkan_VK_IMG_format_pvrtc;
+	version = DVulkan_VK_EXT_validation_flags;
 }
 
 extern(System) @nogc nothrow {
@@ -77,7 +71,7 @@ struct VulkanFunctions {
 	/// The functions may only be used with the passed-in device, and should be free of dispatching overhead.
 	/// Sets `device` to the passed-in device.
 	void loadDeviceFunctions(VkDevice device) {
-		assert(this.vkGetDeviceProcAddr, "loadInstanceFunctions called without vkGetDeviceProcAddr set");
+		assert(this.vkGetDeviceProcAddr, "loadDeviceFunctions called without vkGetDeviceProcAddr set");
 		
 		enum shouldLoad(string name) =
 			Parameters!(__traits(getMember, VulkanFunctions, "PFN_"~name)).length > 0 &&
@@ -328,7 +322,7 @@ struct VulkanFunctions {
 		PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage;
 		alias PFN_vkCmdCopyImageToBuffer = void function(VkCommandBuffer commandBuffer,VkImage srcImage,VkImageLayout srcImageLayout,VkBuffer dstBuffer,uint32_t regionCount,const(VkBufferImageCopy)* pRegions);
 		PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer;
-		alias PFN_vkCmdUpdateBuffer = void function(VkCommandBuffer commandBuffer,VkBuffer dstBuffer,VkDeviceSize dstOffset,VkDeviceSize dataSize,const(uint32_t)* pData);
+		alias PFN_vkCmdUpdateBuffer = void function(VkCommandBuffer commandBuffer,VkBuffer dstBuffer,VkDeviceSize dstOffset,VkDeviceSize dataSize,const(void)* pData);
 		PFN_vkCmdUpdateBuffer vkCmdUpdateBuffer;
 		alias PFN_vkCmdFillBuffer = void function(VkCommandBuffer commandBuffer,VkBuffer dstBuffer,VkDeviceSize dstOffset,VkDeviceSize size,uint32_t data);
 		PFN_vkCmdFillBuffer vkCmdFillBuffer;
